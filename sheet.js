@@ -135,7 +135,7 @@ function evaluationControls(rt){
   const slots=[];
   for(let i=0;i<prepared;i++)slots.push(`<button class="evaluation-die prepared" disabled aria-label="Dado de Avaliação preparado">${inlineMechanicDie(4)}<span>PREPARADO</span></button>`);
   for(let i=0;i<rt.evaluationDice;i++)slots.push(`<button class="evaluation-die" data-eval-use="1" aria-label="Preparar um d4 de Avaliação">${inlineMechanicDie(4)}<span>PREPARAR</span></button>`);
-  while(slots.length<2)slots.push(`<span class="evaluation-die spent" aria-label="Dado de Avaliação consumido"><span class="spent-mark"></span><span>USADO</span></span>`);
+  while(slots.length<2)slots.push(`<span class="evaluation-die spent" aria-label="Dado de Avaliação consumido">${inlineMechanicDie(4)}<span>USADO</span></span>`);
   return slots.join('');
 }
 function abilityActions(ability){
@@ -177,7 +177,7 @@ function renderPending(){
   const evalPrepared=rt.pendingDice.filter(d=>d.source==='Avaliação').length;
   if(rt.evaluationDice||evalPrepared){
     const groups=[];
-    if(rt.evaluationDice)groups.push(pendingGroup(repeatedDice(4,rt.evaluationDice),`DISPONÍVEL${rt.evaluationDice>1?'IS':''}`));
+    if(rt.evaluationDice)groups.push(pendingGroup(repeatedDice(4,rt.evaluationDice),(rt.evaluationDice>1?'DISPONÍVEIS':'DISPONÍVEL')));
     if(evalPrepared)groups.push(pendingGroup(repeatedDice(4,evalPrepared),`PREPARADO${evalPrepared>1?'S':''}`));
     chips.push(`<div class="pending-chip evaluation-pending"><b>AVALIAÇÃO ATIVA</b><span class="separator">·</span>${groups.join('<span class="separator secondary">·</span>')}</div>`)
   }
