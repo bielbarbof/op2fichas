@@ -12,3 +12,7 @@
 O PNG-base do D6 e as variantes coloridas permanecem inalterados. A v0.6.2 aplica somente `transform: scale(.82)` em CSS para corrigir o peso óptico do quadrado em relação a D4, D8, D10, D12 e D20. A regra é global e também alcança as variantes por perfil.
 
 Não há fallback SVG para dados nem para o símbolo ritualístico.
+
+
+## FONTES EMBUTIDAS — HOTFIX v0.6.2
+Girassol e Arpona (Light, Regular e Bold) estão incorporadas diretamente em `fonts.css` como webfonts WOFF2, derivadas dos assets de fonte fornecidos pelo proprietário. O deploy não depende de fontes instaladas no dispositivo e não requer etapa local de instalação de fontes.

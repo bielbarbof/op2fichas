@@ -13,7 +13,7 @@
 - Portrait passa a seguir o fluxo vertical em desktop e permite scroll: aprovado por inspeção estrutural.
 - Regra mobile que remove a arte abaixo de 1120 px preservada: aprovado.
 - Girassol e Arpona Light/Regular/Medium/Bold declaradas como webfonts: aprovado.
-- `prepare_fonts.py` inclui Arpona Medium e busca por basename: aprovado.
+- Webfonts incorporadas em `fonts.css` sem dependência local: aprovado.
 - PV/PD em Arpona Regular: aprovado.
 - Texto de apoio em Arpona Light: aprovado.
 - D6 em `.82` nas superfícies de Fichas: aprovado.
@@ -23,3 +23,7 @@
 ## Integridade compartilhada
 
 A bateria estática conjunta Fichas + Chat fechou em **33/33** verificações aprovadas antes do empacotamento.
+
+
+## FONTES EMBUTIDAS — HOTFIX v0.6.2
+Girassol e Arpona (Light, Regular e Bold) estão incorporadas diretamente em `fonts.css` como webfonts WOFF2, derivadas dos assets de fonte fornecidos pelo proprietário. O deploy não depende de fontes instaladas no dispositivo e não requer etapa local de instalação de fontes.
