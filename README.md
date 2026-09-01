@@ -1,17 +1,18 @@
-# OP2 Playtest Fichas v0.6.1
+# OP2 Playtest Fichas v0.6.2
 
 Extensão comunitária não oficial para Owlbear Rodeo dedicada ao Playtest Alpha de Ordem Paranormal RPG 2.
 
-A v0.6.1 é um patch direto sobre a **v0.6.0 Definitiva**, agora tratada como base canônica do projeto.
+A v0.6.2 parte diretamente da **v0.6.1** e preserva todas as mecânicas e componentes aprovados da linha 0.6.x.
 
 ## Alterações desta versão
 
-- O Mestre agora recebe previews completos dos cinco personagens no mesmo padrão visual do jogador: token, identidade, nível, atributos, PV, PD e botão de ficha completa.
-- A atribuição de jogador foi mantida dentro do preview completo do Mestre.
-- A faixa de efeitos temporários foi refinada: nome, separadores, dados e estado ficam alinhados horizontalmente ao centro, com respiro consistente.
-- Avaliação exibe corretamente os D4 disponíveis/preparados no componente de status.
-- Todas as mecânicas, estados, dados coloridos por perfil, D6 normalizado, PV/PD, Ímpeto, Focos, Avaliação e Prontidão da v0.6.0 foram preservados.
+- Arte de corpo inteiro no Web/Desktop deixa de encolher excessivamente em notebooks: a composição possui altura mínima e passa a usar scroll vertical quando a viewport é baixa.
+- Mobile continua sem carregar a arte de corpo inteiro.
+- Hierarquia tipográfica consolidada com Girassol + Arpona: títulos editoriais em Girassol; estrutura em Arpona Bold; texto de apoio em Arpona Light; valores de PV/PD em Arpona Regular; controles permanecem em Arpona Medium/Bold conforme o peso já definido.
+- `prepare_fonts.py` agora instala também Arpona Medium e aceita as fontes mesmo quando os ZIPs usam pastas internas diferentes.
+- D6 recebe nova correção óptica global (`scale(.82)`), sem modificar o PNG original nem suas variantes coloridas.
+- Preview do Mestre, status preparados, Chat, lixeira administrativa e cards de rolagem aprovados na v0.6.1 foram preservados.
 
 ## Base
 
-A partir da v0.6.0, alterações futuras devem partir desta linha. Versões anteriores permanecem apenas como histórico.
+A linha 0.6.x é a base canônica do projeto. Mudanças futuras devem partir da versão mais recente desta linha.

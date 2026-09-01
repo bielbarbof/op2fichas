@@ -1,4 +1,4 @@
-# Instalação / atualização — v0.6.1 Definitiva
+# Instalação / atualização — v0.6.2
 
 1. Extraia este pacote no repositório da extensão Fichas.
 2. Antes do deploy, instale suas webfonts conforme `FONT_SETUP.md`.
@@ -6,14 +6,14 @@
 4. Manifest de produção previsto: `https://op2fichas.onrender.com/manifest.json`.
 5. No Owlbear Rodeo, mantenha o mesmo manifest para atualizar a extensão existente.
 
-## Atualização a partir da Recovery
+## Compatibilidade
 
-A v0.6.1 mantém `com.op2.playtest/state-v1`, os mesmos IDs de personagem e as atribuições existentes. `normalizeRuntimeState` normaliza o schema atual sem resetar PV, PD, Ímpeto ou atribuições válidas.
+A v0.6.2 mantém `com.op2.playtest/state-v1`, os mesmos IDs de personagem e as atribuições existentes. A atualização não reseta PV, PD, Ímpeto, Avaliação, Focos, Prontidão ou atribuições válidas.
 
 ## Verificação rápida pós-deploy
 
-- Abra PERSONAGENS como Mestre e confira os cinco sobreviventes.
-- Abra uma ficha e teste `+` e `−` de PV/PD.
-- Faça uma falha com Alan/Edgar e confirme o preenchimento do Ímpeto.
-- Ative Avaliação em Eloísa/Kênia, prepare um D4 e confirme o consumo após a rolagem.
-- Confira que no mobile a arte de corpo inteiro não é carregada.
+- Em notebook/viewport baixa, confirme que a arte desktop mantém presença visual e que os pés são alcançados com scroll.
+- Confira que no mobile a arte de corpo inteiro continua ausente.
+- Confirme Girassol nos grandes títulos e Arpona nos demais níveis tipográficos.
+- Compare D6 com D4/D8/D10/D12/D20 em atributos e perícias.
+- Teste `+`/`−` de PV/PD e uma habilidade preparada para confirmar que não houve regressão funcional.
