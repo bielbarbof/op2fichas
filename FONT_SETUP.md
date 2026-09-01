@@ -1,25 +1,25 @@
-# Fontes da v0.5.1 Recovery
+# Fontes da v0.6.0 Definitiva
 
-A interface foi preparada para usar **webfonts servidas pelo próprio deploy** — não usa `local("Arpona")` e não depende de fonte instalada no dispositivo.
+A interface usa **webfonts servidas pelo próprio deploy**. Ela não depende de `local("Arpona")` nem de fontes instaladas no dispositivo.
 
-Os binários das fontes não fazem parte do pacote distribuível. Use as suas próprias cópias de `arpona.zip` e `Girassol.zip` antes do deploy:
+Os binários das fontes não fazem parte deste pacote distribuível. Use as suas próprias cópias de `arpona.zip` e `Girassol.zip` antes do deploy:
 
 ```bash
 python prepare_fonts.py --arpona /caminho/arpona.zip --girassol /caminho/Girassol.zip
 ```
 
-O script usa somente a biblioteca padrão do Python e instala:
+O script instala, dentro de `assets/fonts/`:
 
-- `assets/fonts/arpona-light.otf`
-- `assets/fonts/arpona-regular.otf`
-- `assets/fonts/arpona-bold.otf`
-- `assets/fonts/girassol-regular.ttf`
+- `arpona-light.otf`
+- `arpona-regular.otf`
+- `arpona-bold.otf`
+- `girassol-regular.ttf`
 
-Depois disso, publique normalmente. O navegador baixará essas fontes como assets da extensão em Windows, macOS, Android e iOS.
+Depois disso, publique normalmente. O navegador carregará as fontes como assets da extensão em desktop e mobile.
 
-Hierarquia visual:
+## Hierarquia
 
-- **Girassol**: CHAT, PERSONAGENS e nomes principais das fichas.
+- **Girassol**: PERSONAGENS e nomes principais.
 - **Arpona Bold**: botões, tags, ribbons, perfil, custos e controles.
-- **Arpona Light**: descrições, mensagens e texto corrido.
-- **Cards/rolador do Chat**: preservam a hierarquia tipográfica aprovada da v0.4.0 usando Arpona como webfont.
+- **Arpona Light**: descrições e texto contínuo.
+- **Cards/rolagens**: preservam a hierarquia tipográfica aprovada da linha Recovery.

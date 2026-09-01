@@ -15,6 +15,7 @@ const state = { role:'PLAYER', playerId:'', party:[], roomState:normalizeRuntime
 function escapeHtml(value=''){return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
 function showNotice(text){notice.textContent=text;notice.classList.remove('hidden');setTimeout(()=>notice.classList.add('hidden'),3200)}
 function dieImg(sides, cls=''){return `<img class="die-asset ${cls}" src="./assets/dice/d${Number(sides)}.png" alt="d${Number(sides)}" />`}
+function profileDieImg(profile,sides,cls=''){return `<img class="die-asset ${cls}" src="./assets/dice/profile/${String(profile).toLowerCase()}/d${Number(sides)}.png" alt="d${Number(sides)}" />`}
 function pips(value,max,type='pv'){return `<div class="mini-pips ${type}">${Array.from({length:max},(_,i)=>`<span class="mini-pip ${i<value?'on':''}"></span>`).join('')}</div>`}
 
 async function loadVersion(){try{const m=await fetch('./manifest.json',{cache:'no-store'}).then(r=>r.json());versionEl.textContent=`v${m.version} · FERRAMENTA COMUNITÁRIA NÃO OFICIAL`}catch{}}
@@ -53,7 +54,7 @@ function renderPlayer(){
   const id=assignedCharacterId(state.roomState,state.playerId);
   if(!id){content.innerHTML='<div class="help-card empty-state"><strong>NENHUM PERSONAGEM ATRIBUÍDO.</strong><p>O mestre precisa escolher qual sobrevivente você controlará. A ficha aparecerá aqui automaticamente.</p></div>';return}
   const c=CHARACTERS[id],rt=state.roomState.characters[id];
-  const attrs=Object.entries(c.attributes).map(([key,base])=>{const sides=stepDie(base,rt.stepMods?.[key]||0);return `<div class="stat"><span>${key==='fisico'?'FÍSICO':key==='mente'?'MENTE':'EMOÇÃO'}</span><strong class="stat-die">${dieImg(sides)}</strong></div>`}).join('');
+  const attrs=Object.entries(c.attributes).map(([key,base])=>{const sides=stepDie(base,rt.stepMods?.[key]||0);return `<div class="stat"><span>${key==='fisico'?'FÍSICO':key==='mente'?'MENTE':'EMOÇÃO'}</span><strong class="stat-die">${profileDieImg(c.profile,sides)}</strong></div>`}).join('');
   content.innerHTML=`<article class="player-sheet-card" style="--accent:${c.accent}">
     <div class="player-top"><div class="player-portrait"><img src="${c.token}" alt="${escapeHtml(c.name)}" /></div><div class="player-info"><div class="player-name-row"><h2>${escapeHtml(c.name)}</h2>${levelBadge(c.level)}</div><div class="bigmeta"><span class="player-profile">${escapeHtml(c.profile)}</span><span>•</span><span>${escapeHtml(c.occupation)}</span></div><div class="stats">${attrs}</div></div></div>
     <div class="mini-resources"><div class="mini-resource"><div class="mini-resource-head"><span class="mini-tag">PV</span><strong>${rt.pv}/${c.maxPV}</strong></div>${pips(rt.pv,c.maxPV,'pv')}</div><div class="mini-resource"><div class="mini-resource-head"><span class="mini-tag">PD</span><strong>${rt.pd}/${c.maxPD}</strong></div>${pips(rt.pd,c.maxPD,'pd')}</div></div>

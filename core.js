@@ -111,6 +111,12 @@ export function applyOperation(stateInput, operation, sender) {
       runtime.pendingDice = runtime.pendingDice.filter(d => !ids.has(d.id));
       break;
     }
+    case 'resolve-roll': {
+      const ids = new Set(Array.isArray(operation.consumedIds) ? operation.consumedIds.map(String) : []);
+      runtime.pendingDice = runtime.pendingDice.filter(d => !ids.has(d.id));
+      if (character.profile === 'Executor' && operation.failed === true) runtime.impulse = clamp(runtime.impulse + 1, 0, 3);
+      break;
+    }
     case 'evaluation-set': runtime.evaluationDice = clamp(Math.trunc(operation.value), 0, 2); break;
     case 'evaluation-use': {
       const count = clamp(Math.trunc(operation.count || 1), 1, 2);

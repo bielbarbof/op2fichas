@@ -1,23 +1,33 @@
-# Changelog — v0.5.1 Recovery
+# Changelog — v0.6.0 Definitiva
 
-- Reconstruída sobre a v0.4.0 para eliminar as regressões da v0.5.0.
-- Cabeçalho editorial restaurado com nome, perfil, ocupação, nível e efeitos temporários.
-- Grade mestre desktop realinhada em PERÍCIAS | PERSONAGEM | ATRIBUTOS/RECURSOS/HABILIDADES.
-- Mobile reorganizado para leitura e operação rápida; arte de corpo inteiro não é carregada abaixo de 1121 px.
-- Perícias simplificadas para PERÍCIA | DADO | + | DADO | ATRIBUTO | ROLAR, sem seletor ATRIBUTO/BASE nem DT no topo.
-- Atributos usam os dados originais em tamanho legível.
-- PV/PD receberam segmentos separados, controles maiores e melhor respiro.
-- Habilidades usam custo em tag e botões com borda completa.
-- Foco Mental e Foco Emocional cobram 2 PD, preparam um d4, só disparam no atributo compatível e são consumidos no teste válido.
-- Avaliação cobra 2 PD, cria dois d4 independentes e interativos, permite preparar um ou ambos e bloqueia nova ativação enquanto houver dados ativos.
-- Ímpeto preservado com três espaços, preenchimento automático em falhas dos Executores, gasto de 1 espaço para d4 e 3 espaços para +1 passo de atributo.
-- Prontidão cobra 3 PD, sinaliza RODADA ANTECIPADA e pode ser encerrada.
-- Efeitos temporários substituem a antiga informação de controlador no cabeçalho.
-- Cards de rolagem removem RA/RB/DT da apresentação e colocam o ícone do dado ao lado do valor rolado.
-- Sucesso/falha críticos colorem o card inteiro em verde/vermelho escuro.
-- Tela PERSONAGENS usa tokens; fichas abertas usam artes de corpo inteiro no desktop.
-- Resumo do jogador atualizado com nível inclinado, atributos e recursos segmentados.
-- Preparação Rápida e rodapé foram realinhados.
-- Fontes web configuradas por @font-face, sem dependência de local("Arpona").
-- Somente os PNGs de dados fornecidos para a Recovery são referenciados; nenhum dado é redesenhado em runtime.
-- Chaves de estado/atribuição preservadas para migração sem reset de PV, PD ou personagem atribuído.
+## Acabamento visual
+
+- Arte de corpo inteiro reposicionada abaixo da divisão do cabeçalho nas fichas desktop.
+- Traçados decorativos sem função removidos ao redor da arte central e no lado direito dos cards de PERSONAGENS.
+- Mobile mantém foco em praticidade e não carrega a arte de corpo inteiro.
+- D6 reduzido visualmente para equilibrar a família de dados sem modificar o arquivo original.
+- Dados exibidos em atributos e perícias agora usam a cor do perfil do personagem.
+- Símbolos mecânicos e dados dentro das descrições/controles das habilidades também usam a cor do perfil.
+- Variantes coloridas são derivadas dos PNGs originais e preservam forma e numeral.
+
+## Recursos e habilidades
+
+- Controles `+`/`−` de PV e PD corrigidos para Mestre e jogador autorizado.
+- Atualização imediata de barras, números e estado persistido.
+- Mutações serializadas para evitar sobrescrita em cliques rápidos.
+- Falha de Executor passa pelo fluxo central de resolução e preenche Ímpeto imediatamente, até o máximo de 3.
+- Foco Mental e Foco Emocional: cobrança, preparação, restrição ao atributo compatível, consumo e feedback sincronizados.
+- Avaliação: dois D4 independentes, preparação individual, consumo na rolagem e atualização do contador sem refresh.
+- Prontidão: cobrança única, estado ativo e encerramento sincronizados.
+
+## Rolagens e Chat
+
+- Card de rolagem mostra o ícone do dado antes do valor individual.
+- Área de resultado foi reorganizada para melhor alinhamento visual.
+- Pequeno respiro adicionado entre horário e botão de exclusão no Chat.
+- Tipografia dos cards e do rolador permanece alinhada ao componente aprovado na Recovery.
+
+## Compatibilidade
+
+- Mantidas as chaves de estado e atribuição da linha anterior.
+- Base estrutural continua descendendo da v0.4.0 estável; a v0.5.0 rejeitada não foi adotada como fundação.
