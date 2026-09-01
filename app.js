@@ -55,7 +55,7 @@ function renderGM(){
     const assignment = state.roomState.assignments?.[c.id];
     const rt = state.roomState.characters[c.id];
     return `<article class="character-card" style="--accent:${c.accent}">
-      <div class="portrait-cut"><img src="${c.portrait}" alt="${escapeHtml(c.name)}" style="object-position:${c.thumbPosition||'50% 12%'}" /></div>
+      <div class="portrait-cut"><img src="${c.token||c.portrait}" alt="${escapeHtml(c.name)}" /></div>
       <div class="card-main">
         <div class="card-head"><strong class="card-name">${escapeHtml(c.name)}</strong><span class="profile-tag">${escapeHtml(c.profile)}</span></div>
         <div class="meta">${escapeHtml(c.occupation)} · Nível ${c.level}</div>
@@ -96,7 +96,7 @@ function renderPlayer(){
   const c = CHARACTERS[id], rt = state.roomState.characters[id];
   content.innerHTML = `<article class="player-sheet-card" style="--accent:${c.accent}">
     <div class="player-hero">
-      <div class="player-portrait"><img src="${c.portrait}" alt="${escapeHtml(c.name)}" style="object-position:${c.thumbPosition||'50% 12%'}" /></div>
+      <div class="player-portrait"><img src="${c.token||c.portrait}" alt="${escapeHtml(c.name)}" /></div>
       <div><h2>${escapeHtml(c.name)}</h2><div class="bigmeta">${escapeHtml(c.profile)} · ${escapeHtml(c.occupation)} · Nível ${c.level}</div>
       <div class="stats"><div class="stat"><span>FÍSICO</span><b>d${c.attributes.fisico}</b></div><div class="stat"><span>MENTE</span><b>d${c.attributes.mente}</b></div><div class="stat"><span>EMOÇÃO</span><b>d${c.attributes.emocao}</b></div></div></div>
     </div>

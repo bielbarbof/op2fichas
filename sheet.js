@@ -13,7 +13,6 @@ const attrLabel = key => key==='fisico'?'Físico':key==='mente'?'Mente':'Emoçã
 function escapeHtml(value=''){return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
 function runtime(){return state.roomState.characters[characterId]}
 function assignment(){return state.roomState.assignments?.[characterId] || null}
-function controllerName(){const a=assignment();if(!a)return 'Não atribuído';return state.party.find(p=>p.id===a.playerId)?.name || a.playerName || 'Jogador'}
 function toast(text){const el=$('#toast');el.textContent=text;el.classList.remove('hidden');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>el.classList.add('hidden'),3200)}
 function dieImg(sides,cls=''){return `<span class="die-glyph ${cls}" style="--die:url('./assets/dice/d${Number(sides)}.svg')" aria-label="d${Number(sides)}"></span>`}
 
@@ -64,13 +63,14 @@ function renderSkills(){
 function pips(value,max){return Array.from({length:max},(_,i)=>`<span class="pip ${i<value?'on':''}"></span>`).join('')}
 function renderResources(){const rt=runtime();$('#pvValue').textContent=rt.pv;$('#pvMax').textContent=character.maxPV;$('#pdValue').textContent=rt.pd;$('#pdMax').textContent=character.maxPD;$('#pvPips').innerHTML=pips(rt.pv,character.maxPV);$('#pdPips').innerHTML=pips(rt.pd,character.maxPD)}
 
+function bolts(count){return `<span class="bolt-stack">${Array.from({length:count},()=>'<i class="bolt-icon"></i>').join('')}</span>`}
 function abilityActions(ability){
   const rt=runtime();
   if(ability.id==='foco-mental') return `<div class="ability-actions"><button data-action="focus-mental" ${rt.pd<2?'disabled':''}>GASTAR 2 PD · +D4 NO PRÓXIMO TESTE MENTAL</button></div>`;
   if(ability.id==='foco-emocional') return `<div class="ability-actions"><button data-action="focus-emotional" ${rt.pd<2?'disabled':''}>GASTAR 2 PD · +D4 NO PRÓXIMO TESTE EMOCIONAL</button></div>`;
   if(ability.id==='avaliacao') return `<div class="ability-actions"><button data-action="evaluation" ${rt.pd<2?'disabled':''}>GASTAR 2 PD · AVALIAR</button>${rt.evaluationDice?`<button data-eval-use="1">USAR 1D4 (${rt.evaluationDice})</button>${rt.evaluationDice>1?'<button data-eval-use="2">USAR 2D4</button>':''}`:''}</div>${rt.evaluationDice?`<span class="active-flag">AVALIAÇÃO · ${rt.evaluationDice}D4 DISPONÍVEL${rt.evaluationDice>1?'IS':''}</span>`:''}`;
   if(ability.id==='prontidao') return `<div class="ability-actions">${rt.readiness?'<button data-action="readiness-clear">PRONTIDÃO ATIVA · ENCERRAR</button>':`<button data-action="readiness" ${rt.pd<3?'disabled':''}>GASTAR 3 PD · ATIVAR PRONTIDÃO</button>`}</div>`;
-  if(ability.id==='impeto') return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions"><button data-action="impulse-one" ${rt.impulse<1?'disabled':''}>GASTAR 1 · +D4</button><button data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>3 · +1 PASSO FÍSICO</button><button data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>3 · +1 PASSO MENTE</button><button data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>3 · +1 PASSO EMOÇÃO</button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">FIM DA CENA · LIMPAR PASSOS</button>':''}</div>`;
+  if(ability.id==='impeto') return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions"><button class="impulse-cost" data-action="impulse-one" ${rt.impulse<1?'disabled':''}>${bolts(1)}<span>+D4 NO TESTE</span></button><button class="impulse-cost" data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO FÍSICO</span></button><button class="impulse-cost" data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO MENTE</span></button><button class="impulse-cost" data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO EMOÇÃO</span></button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">FIM DA CENA · LIMPAR PASSOS</button>':''}</div>`;
   return '';
 }
 
@@ -84,13 +84,13 @@ function renderAbilities(){
 
 function renderPending(){
   const rt=runtime();const chips=[];
-  for(const d of rt.pendingDice)chips.push(`<div class="pending-chip"><b>+D${d.sides}</b> · ${escapeHtml(d.source)}${d.scope!=='any'?` · ${attrLabel(d.scope).toUpperCase()}`:''}</div>`);
-  if(rt.readiness)chips.push('<div class="pending-chip"><b>PRONTIDÃO ATIVA</b> · RODADA ANTECIPADA</div>');
-  if(!chips.length)chips.push('<div class="pending-chip">SEM EFEITOS TEMPORÁRIOS PREPARADOS</div>');
+  for(const d of rt.pendingDice)chips.push(`<div class="pending-chip"><b>${escapeHtml(d.source).toUpperCase()}</b><span class="separator">·</span><span>+D${d.sides}${d.scope!=='any'?` · ${attrLabel(d.scope).toUpperCase()}`:''}</span></div>`);
+  if(rt.readiness)chips.push('<div class="pending-chip"><b>PRONTIDÃO ATIVA</b><span class="separator">·</span><span>RODADA ANTECIPADA</span></div>');
+  if(!chips.length)chips.push('<div class="pending-chip empty">SEM EFEITOS TEMPORÁRIOS</div>');
   $('#pending').innerHTML=chips.join('');
 }
 
-function renderDynamic(){if(!character)return;$('#controller').textContent=`CONTROLADOR · ${controllerName()}`;renderAttributes();renderSkills();renderResources();renderAbilities();renderPending()}
+function renderDynamic(){if(!character)return;renderAttributes();renderSkills();renderResources();renderAbilities();renderPending()}
 function render(){if(!character){$('#unauthorized').textContent='Personagem inexistente.';$('#unauthorized').classList.remove('hidden');return}renderStatic();const auth=!OBR.isAvailable||isAuthorized(state.roomState,characterId,state.playerId,state.role);$('#unauthorized').classList.toggle('hidden',auth);$('#sheetBody').classList.toggle('hidden',!auth);if(auth)renderDynamic()}
 
 async function handleAbility(action){

@@ -18,7 +18,7 @@
       <div class="header-title">
         <div class="name-row"><h1 id="name">...</h1><span id="profile" class="profile-tag">...</span><span class="dot">•</span><span id="occupation" class="occupation">...</span><span class="dot">•</span><span class="level-label">NÍVEL <b id="level">2</b></span></div>
       </div>
-      <div class="header-tools"><span id="controller" class="controller">...</span><button id="close" class="close-btn" aria-label="Fechar">×</button></div>
+      <div class="header-tools"><div id="pending" class="pending-panel"></div><button id="close" class="close-btn" aria-label="Fechar">×</button></div>
     </header>
 
     <section id="unauthorized" class="unauthorized hidden">Esta ficha não está atribuída a você.</section>
@@ -26,12 +26,10 @@
     <section id="sheetBody" class="sheet-grid hidden">
       <aside class="left-column">
         <section class="block skills-block">
-          <div class="block-head">
-            <div class="ribbon">PERÍCIAS</div>
-            <div class="test-controls">
-              <label>DT <input id="dtInput" type="number" min="1" max="99" value="7" /></label>
-              <label>ATRIBUTO <select id="attributeOverride"><option value="base">BASE</option><option value="fisico">FÍSICO</option><option value="mente">MENTE</option><option value="emocao">EMOÇÃO</option></select></label>
-            </div>
+          <div class="block-head"><div class="ribbon">PERÍCIAS</div></div>
+          <div class="skills-toolbar">
+            <label class="dt-control">DT<input id="dtInput" type="number" min="1" max="99" value="7" /></label>
+            <label class="attribute-control">ATRIBUTO<select id="attributeOverride"><option value="base">BASE</option><option value="fisico">FÍSICO</option><option value="mente">MENTE</option><option value="emocao">EMOÇÃO</option></select></label>
           </div>
           <div id="skills" class="skills"></div>
         </section>
@@ -39,7 +37,6 @@
 
       <section class="portrait-column">
         <div class="portrait-stage"><img id="portrait" alt="" /></div>
-        <div id="pending" class="pending-panel"></div>
       </section>
 
       <aside class="right-column">
@@ -51,12 +48,12 @@
           <article class="resource-card pv-card">
             <div class="resource-head"><span>PV</span><strong><b id="pvValue">0</b>/<span id="pvMax">0</span></strong></div>
             <div id="pvPips" class="pips"></div>
-            <div class="resource-actions"><button data-res="pv" data-delta="-1">−</button><button data-res="pv" data-delta="1">+</button></div>
+            <div class="resource-actions"><button data-res="pv" data-delta="-1" aria-label="Remover 1 PV">−</button><button data-res="pv" data-delta="1" aria-label="Adicionar 1 PV">+</button></div>
           </article>
           <article class="resource-card pd-card">
             <div class="resource-head"><span>PD</span><strong><b id="pdValue">0</b>/<span id="pdMax">0</span></strong></div>
             <div id="pdPips" class="pips"></div>
-            <div class="resource-actions"><button data-res="pd" data-delta="-1">−</button><button data-res="pd" data-delta="1">+</button></div>
+            <div class="resource-actions"><button data-res="pd" data-delta="-1" aria-label="Remover 1 PD">−</button><button data-res="pd" data-delta="1" aria-label="Adicionar 1 PD">+</button></div>
           </article>
         </section>
         <section id="abilities" class="abilities"></section>
