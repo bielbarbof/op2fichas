@@ -1,0 +1,10 @@
+{
+  "name": "OP2 Playtest Fichas",
+  "version": "0.1.0",
+  "manifest_version": 1,
+  "description": "Fichas digitais comunitárias do Ato I do Playtest Alpha de Ordem Paranormal RPG 2 para Owlbear Rodeo.",
+  "author": "Ferramenta comunitária não oficial",
+  "icon": "/icon.svg",
+  "action": {"title":"OP2 Playtest Fichas","icon":"/icon.svg","popover":"/","height":800,"width":460},
+  "background_url": "/background.html"
+}
