@@ -1,15 +1,15 @@
-# Changelog — v0.4.0
+# Changelog — v0.5.0
 
-- Cabeçalho de personagem reorganizado com perfil, ocupação e nível em composição editorial.
-- DT/Atributo removidos do topo das Perícias; grade de perícias realinhada.
-- Personagem central ampliado e área de arte limpa.
-- Atributos e PV/PD separados visualmente; marcadores de PV/PD com maior respiro.
-- Símbolo PNG oficial fornecido pelo projeto aplicado ao pré-carregamento e ícone das Fichas.
-- Tipografia reestruturada: Agharti em títulos principais, Arpona Bold em botões/forms, Arpona Light em corpo.
-- Custos em PD movidos para tags discretas junto aos poderes; botões mostram o benefício.
-- Foco Mental/Foco Emocional deduplicados, aplicados automaticamente e consumidos no teste compatível.
-- Avaliação, Prontidão e Ímpeto revisados; mutações do estado agora são serializadas pelo GM.
-- Efeitos temporários reorganizados no cabeçalho.
-- Cards de rolagem de Ficha e Chat unificados e simplificados; RA/RB/DT removidos da apresentação.
-- Resumo do jogador redesenhado com token maior, dados gráficos e PV/PD segmentados.
-- Preparação Rápida e cards do Mestre realinhados.
+- Revisão de layout web com grade mestre para Perícias, personagem e painel direito.
+- Nome dos personagens e `PERSONAGENS` agora usam Girassol.
+- Loading redesenhado com o PNG ritualístico oficial ocupando/ultrapassando o viewport.
+- Novo conjunto visual chapado para d4, d6, d8, d10, d12 e d20.
+- Cards/pop-ups de rolagem sincronizados visualmente com o Chat: sem RA/RB/DT e sem emblemas inventados.
+- Sucesso crítico colore o card em verde-escuro; falha crítica em vermelho-escuro.
+- Avaliação refeita como pool visual de dois d4 clicáveis; cada dado pode ser preparado individualmente e desaparece após ser consumido.
+- Foco Mental/Foco Emocional permanecem one-shot, com deduplicação e consumo por atributo compatível.
+- Ímpeto e Prontidão preservados e auditados.
+- Resumo do jogador refinado: token maior, atributos com dados e PV/PD segmentados; Nível segue o shape da ficha completa.
+- Preparação Rápida centralizada verticalmente.
+- Rodapé reduzido para `v0.5.0 · FERRAMENTA COMUNITÁRIA NÃO OFICIAL`.
+- Tipografia deixa de depender das fontes instaladas no aparelho: Girassol/Bitter são webfonts; Arpona licenciada pode ser auto-hospedada.

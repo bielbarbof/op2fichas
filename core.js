@@ -139,7 +139,7 @@ export function applyOperation(stateInput, operation, sender) {
     }
     case 'ability-evaluation':
       if (runtime.pd < 2) throw new Error('PD insuficiente.');
-      if (runtime.evaluationDice >= 2) throw new Error('Avaliação já está com 2 dados disponíveis.');
+      if (runtime.evaluationDice > 0 || runtime.pendingDice.some(d => d.source === 'Avaliação')) throw new Error('Avaliação já está ativa.');
       runtime.pd -= 2;
       runtime.evaluationDice = 2;
       break;
