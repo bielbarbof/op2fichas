@@ -1,4 +1,4 @@
-# Instalação / atualização — v0.6.0 Definitiva
+# Instalação / atualização — v0.6.1 Definitiva
 
 1. Extraia este pacote no repositório da extensão Fichas.
 2. Antes do deploy, instale suas webfonts conforme `FONT_SETUP.md`.
@@ -8,7 +8,7 @@
 
 ## Atualização a partir da Recovery
 
-A v0.6.0 mantém `com.op2.playtest/state-v1`, os mesmos IDs de personagem e as atribuições existentes. `normalizeRuntimeState` normaliza o schema atual sem resetar PV, PD, Ímpeto ou atribuições válidas.
+A v0.6.1 mantém `com.op2.playtest/state-v1`, os mesmos IDs de personagem e as atribuições existentes. `normalizeRuntimeState` normaliza o schema atual sem resetar PV, PD, Ímpeto ou atribuições válidas.
 
 ## Verificação rápida pós-deploy
 

@@ -34,18 +34,21 @@ function playerOptions(currentId=''){
 function levelBadge(level){return `<span class="level-inline"><span>NÍVEL</span><b>${level}</b></span>`}
 
 function renderGM(){
-  const cards=Object.values(CHARACTERS).map(c=>{const assignment=state.roomState.assignments?.[c.id],rt=state.roomState.characters[c.id];return `<article class="character-card" style="--accent:${c.accent}">
-    <div class="portrait-cut"><img src="${c.token}" alt="${escapeHtml(c.name)}" /></div>
-    <div class="card-main">
-      <div class="card-head"><strong class="card-name">${escapeHtml(c.name)}</strong><span class="profile-tag">${escapeHtml(c.profile)}</span></div>
-      <div class="meta"><span>${escapeHtml(c.occupation)}</span><span class="meta-dot">•</span>${levelBadge(c.level)}</div>
-      <div class="resource-line"><span>PV <b>${rt.pv}/${c.maxPV}</b></span><span>PD <b>${rt.pd}/${c.maxPD}</b></span></div>
-      <div class="assignment"><select data-assign="${c.id}" aria-label="Atribuir ${escapeHtml(c.name)}">${playerOptions(assignment?.playerId||'')}</select><button class="open-btn" data-open="${c.id}">ABRIR</button></div>
-    </div>
-  </article>`}).join('');
+  const cards=Object.values(CHARACTERS).map(c=>{
+    const assignment=state.roomState.assignments?.[c.id],rt=state.roomState.characters[c.id];
+    const attrs=Object.entries(c.attributes).map(([key,base])=>{
+      const sides=stepDie(base,rt.stepMods?.[key]||0);
+      return `<div class="stat"><span>${key==='fisico'?'FÍSICO':key==='mente'?'MENTE':'EMOÇÃO'}</span><strong class="stat-die">${profileDieImg(c.profile,sides)}</strong></div>`;
+    }).join('');
+    return `<article class="player-sheet-card gm-preview-card" style="--accent:${c.accent}">
+      <div class="player-top"><div class="player-portrait"><img src="${c.token}" alt="${escapeHtml(c.name)}" /></div><div class="player-info"><div class="player-name-row"><h2>${escapeHtml(c.name)}</h2>${levelBadge(c.level)}</div><div class="bigmeta"><span class="player-profile">${escapeHtml(c.profile)}</span><span>•</span><span>${escapeHtml(c.occupation)}</span></div><div class="stats">${attrs}</div></div></div>
+      <div class="mini-resources"><div class="mini-resource"><div class="mini-resource-head"><span class="mini-tag">PV</span><strong>${rt.pv}/${c.maxPV}</strong></div>${pips(rt.pv,c.maxPV,'pv')}</div><div class="mini-resource"><div class="mini-resource-head"><span class="mini-tag">PD</span><strong>${rt.pd}/${c.maxPD}</strong></div>${pips(rt.pd,c.maxPD,'pd')}</div></div>
+      <div class="gm-preview-controls"><label class="gm-assignment-label"><span>JOGADOR</span><select data-assign="${c.id}" aria-label="Atribuir ${escapeHtml(c.name)}">${playerOptions(assignment?.playerId||'')}</select></label><button class="primary-open gm-open" data-open="${c.id}">ABRIR FICHA COMPLETA</button></div>
+    </article>`;
+  }).join('');
   content.innerHTML=`
     <section class="prep-section"><div class="section-title"><span>PREPARAÇÃO RÁPIDA</span></div><div class="presets"><div class="preset"><b>3 JOGADORES</b><span>Alan · Victor · Eloísa</span></div><div class="preset"><b>4 JOGADORES</b><span>Alan · Edgar · Eloísa · Victor</span></div><div class="preset"><b>5 JOGADORES</b><span>Alan · Edgar · Eloísa · Kênia · Victor</span></div></div><div class="help-card"><strong>ATRIBUA UM SOBREVIVENTE PARA CADA JOGADOR.</strong><p>PV, PD, Ímpeto, efeitos e atribuições ficam salvos na sala do Owlbear. A mesma mesa continua de onde parou ao trocar de navegador ou dispositivo.</p></div></section>
-    <div class="section-title"><span>SOBREVIVENTES</span></div><div class="roster">${cards}</div>`;
+    <div class="section-title"><span>SOBREVIVENTES</span></div><div class="roster gm-roster">${cards}</div>`;
   content.querySelectorAll('[data-assign]').forEach(select=>{const assignment=state.roomState.assignments?.[select.dataset.assign];select.value=assignment?.playerId||'';select.addEventListener('change',async()=>{try{await assignCharacter(select.dataset.assign,select.value);showNotice(select.value?'PERSONAGEM ATRIBUÍDO.':'ATRIBUIÇÃO REMOVIDA.')}catch(e){showNotice(e.message||String(e))}})});
   content.querySelectorAll('[data-open]').forEach(btn=>btn.addEventListener('click',()=>openSheet(btn.dataset.open)));
 }

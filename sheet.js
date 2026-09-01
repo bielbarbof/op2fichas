@@ -166,19 +166,22 @@ function renderAbilities(){
 }
 
 function repeatedDice(sides,count){return Array.from({length:count},()=>inlineMechanicDie(sides)).join('')}
+function pendingGroup(diceMarkup,label){return `<span class="pending-group"><span class="pending-dice">${diceMarkup}</span><span class="pending-label">${label}</span></span>`}
 function renderPending(){
   const rt=runtime(),chips=[];const seen=new Set();
   for(const d of rt.pendingDice){
     if(d.source==='Avaliação')continue;
     const key=d.effectKey||`${d.source}:${d.scope}`;if(seen.has(key))continue;seen.add(key);
-    chips.push(`<div class="pending-chip"><b>${escapeHtml(d.source).toUpperCase()}</b><span class="separator">·</span><span>+${inlineMechanicDie(d.sides)}${d.scope!=='any'?` NO PRÓXIMO TESTE ${attrLabel(d.scope).toUpperCase()}`:' NO PRÓXIMO TESTE'}</span></div>`)
+    chips.push(`<div class="pending-chip"><b>${escapeHtml(d.source).toUpperCase()}</b><span class="separator">·</span>${pendingGroup(`+${inlineMechanicDie(d.sides)}`,d.scope!=='any'?`NO PRÓXIMO TESTE ${attrLabel(d.scope).toUpperCase()}`:'NO PRÓXIMO TESTE')}</div>`)
   }
   const evalPrepared=rt.pendingDice.filter(d=>d.source==='Avaliação').length;
   if(rt.evaluationDice||evalPrepared){
-    const parts=[];if(rt.evaluationDice)parts.push(`${repeatedDice(4,rt.evaluationDice)} DISPONÍVEL${rt.evaluationDice>1?'IS':''}`);if(evalPrepared)parts.push(`${repeatedDice(4,evalPrepared)} PREPARADO${evalPrepared>1?'S':''}`);
-    chips.push(`<div class="pending-chip"><b>AVALIAÇÃO ATIVA</b><span class="separator">·</span><span>${parts.join(' · ')}</span></div>`)
+    const groups=[];
+    if(rt.evaluationDice)groups.push(pendingGroup(repeatedDice(4,rt.evaluationDice),`DISPONÍVEL${rt.evaluationDice>1?'IS':''}`));
+    if(evalPrepared)groups.push(pendingGroup(repeatedDice(4,evalPrepared),`PREPARADO${evalPrepared>1?'S':''}`));
+    chips.push(`<div class="pending-chip evaluation-pending"><b>AVALIAÇÃO ATIVA</b><span class="separator">·</span>${groups.join('<span class="separator secondary">·</span>')}</div>`)
   }
-  if(rt.readiness)chips.push('<div class="pending-chip"><b>PRONTIDÃO ATIVA</b><span class="separator">·</span><span>RODADA ANTECIPADA</span></div>');
+  if(rt.readiness)chips.push('<div class="pending-chip"><b>PRONTIDÃO ATIVA</b><span class="separator">·</span><span class="pending-label">RODADA ANTECIPADA</span></div>');
   if(!chips.length)chips.push('<div class="pending-chip empty">SEM EFEITOS TEMPORÁRIOS</div>');
   $('#pending').innerHTML=chips.join('');
 }

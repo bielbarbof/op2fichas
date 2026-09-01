@@ -1,4 +1,4 @@
-# Fontes da v0.6.0 Definitiva
+# Fontes da v0.6.1 Definitiva
 
 A interface usa **webfonts servidas pelo próprio deploy**. Ela não depende de `local("Arpona")` nem de fontes instaladas no dispositivo.
 
