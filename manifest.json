@@ -1,8 +1,8 @@
 {
   "name": "OP2 Playtest Fichas",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "manifest_version": 1,
-  "description": "Fichas comunitárias do playtest de Ordem Paranormal RPG 2 para Owlbear Rodeo, com personagens prontos e automações.",
+  "description": "Fichas comunitárias do playtest de Ordem Paranormal RPG 2 para Owlbear Rodeo.",
   "author": "Ferramenta comunitária não oficial",
   "icon": "/assets/ui/loading-symbol.png",
   "action": {
@@ -10,7 +10,7 @@
     "icon": "/assets/ui/loading-symbol.png",
     "popover": "/",
     "height": 800,
-    "width": 500
+    "width": 520
   },
   "background_url": "/background.html"
 }

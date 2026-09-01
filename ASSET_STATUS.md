@@ -1,6 +1,9 @@
-# Assets — v0.5.0
+# Assets — v0.5.1 Recovery
 
-- d4/d6/d8/d10/d12/d20: silhuetas chapadas reconstruídas a partir da referência visual do Playtest fornecida pelo usuário.
-- Loading: `assets/ui/loading-symbol.png`, usando o PNG fornecido pelo usuário.
-- Tokens e artes de corpo inteiro dos cinco personagens preservados.
-- Fontes: ver `FONT_SETUP.md`.
+- `assets/ui/loading-symbol.png`: cópia do `SÍMBOLO DE CARREGAMENTO.png` fornecido neste chat.
+- `assets/tokens/*.png`: tokens fornecidos para PERSONAGENS e resumo do jogador.
+- `assets/characters/*.png`: artes de corpo inteiro fornecidas para a ficha desktop.
+- `assets/dice/d4.png`, `d6.png`, `d8.png`, `d10.png`, `d12.png`, `d20.png`: cópias byte a byte dos seis PNGs originais fornecidos neste chat.
+- `assets/portraits/*.jpg`: referências visuais das fichas originais mantidas apenas como assets auxiliares; a ficha funcional usa os corpos inteiros acima.
+
+Não há fallback SVG para dados nem para o símbolo ritualístico.

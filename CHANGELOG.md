@@ -1,15 +1,23 @@
-# Changelog — v0.5.0
+# Changelog — v0.5.1 Recovery
 
-- Revisão de layout web com grade mestre para Perícias, personagem e painel direito.
-- Nome dos personagens e `PERSONAGENS` agora usam Girassol.
-- Loading redesenhado com o PNG ritualístico oficial ocupando/ultrapassando o viewport.
-- Novo conjunto visual chapado para d4, d6, d8, d10, d12 e d20.
-- Cards/pop-ups de rolagem sincronizados visualmente com o Chat: sem RA/RB/DT e sem emblemas inventados.
-- Sucesso crítico colore o card em verde-escuro; falha crítica em vermelho-escuro.
-- Avaliação refeita como pool visual de dois d4 clicáveis; cada dado pode ser preparado individualmente e desaparece após ser consumido.
-- Foco Mental/Foco Emocional permanecem one-shot, com deduplicação e consumo por atributo compatível.
-- Ímpeto e Prontidão preservados e auditados.
-- Resumo do jogador refinado: token maior, atributos com dados e PV/PD segmentados; Nível segue o shape da ficha completa.
-- Preparação Rápida centralizada verticalmente.
-- Rodapé reduzido para `v0.5.0 · FERRAMENTA COMUNITÁRIA NÃO OFICIAL`.
-- Tipografia deixa de depender das fontes instaladas no aparelho: Girassol/Bitter são webfonts; Arpona licenciada pode ser auto-hospedada.
+- Reconstruída sobre a v0.4.0 para eliminar as regressões da v0.5.0.
+- Cabeçalho editorial restaurado com nome, perfil, ocupação, nível e efeitos temporários.
+- Grade mestre desktop realinhada em PERÍCIAS | PERSONAGEM | ATRIBUTOS/RECURSOS/HABILIDADES.
+- Mobile reorganizado para leitura e operação rápida; arte de corpo inteiro não é carregada abaixo de 1121 px.
+- Perícias simplificadas para PERÍCIA | DADO | + | DADO | ATRIBUTO | ROLAR, sem seletor ATRIBUTO/BASE nem DT no topo.
+- Atributos usam os dados originais em tamanho legível.
+- PV/PD receberam segmentos separados, controles maiores e melhor respiro.
+- Habilidades usam custo em tag e botões com borda completa.
+- Foco Mental e Foco Emocional cobram 2 PD, preparam um d4, só disparam no atributo compatível e são consumidos no teste válido.
+- Avaliação cobra 2 PD, cria dois d4 independentes e interativos, permite preparar um ou ambos e bloqueia nova ativação enquanto houver dados ativos.
+- Ímpeto preservado com três espaços, preenchimento automático em falhas dos Executores, gasto de 1 espaço para d4 e 3 espaços para +1 passo de atributo.
+- Prontidão cobra 3 PD, sinaliza RODADA ANTECIPADA e pode ser encerrada.
+- Efeitos temporários substituem a antiga informação de controlador no cabeçalho.
+- Cards de rolagem removem RA/RB/DT da apresentação e colocam o ícone do dado ao lado do valor rolado.
+- Sucesso/falha críticos colorem o card inteiro em verde/vermelho escuro.
+- Tela PERSONAGENS usa tokens; fichas abertas usam artes de corpo inteiro no desktop.
+- Resumo do jogador atualizado com nível inclinado, atributos e recursos segmentados.
+- Preparação Rápida e rodapé foram realinhados.
+- Fontes web configuradas por @font-face, sem dependência de local("Arpona").
+- Somente os PNGs de dados fornecidos para a Recovery são referenciados; nenhum dado é redesenhado em runtime.
+- Chaves de estado/atribuição preservadas para migração sem reset de PV, PD ou personagem atribuído.

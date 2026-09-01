@@ -1,40 +1,200 @@
 import OBR from 'https://esm.unpkg.com/@owlbear-rodeo/sdk@3.1.0';
 import { CHARACTERS, SKILL_ORDER, labelSkill, stepDie } from './characters.js';
-import { ROOM_STATE_KEY, SYNC_CHANNEL, CHAT_CHANNEL, normalizeRuntimeState, isAuthorized, makeBonusDie } from './core.js';
+import { ROOM_STATE_KEY, SYNC_CHANNEL, CHAT_CHANNEL, SHEET_MODAL_ID, normalizeRuntimeState, isAuthorized, makeBonusDie } from './core.js';
 import { rollOp2Test } from './roll.js';
 
-const params=new URLSearchParams(location.search);
-const characterId=params.get('id')||'alan';
-const character=CHARACTERS[characterId];
-const state={role:'PLAYER',playerId:'preview',party:[],roomState:normalizeRuntimeState(null),toastTimer:null,rollTimer:null};
-const $=s=>document.querySelector(s);
-const attrLabel=key=>key==='fisico'?'Físico':key==='mente'?'Mente':'Emoção';
+const params = new URLSearchParams(location.search);
+const characterId = params.get('id') || 'alan';
+const character = CHARACTERS[characterId];
+const openedFromChat = params.get('from') === 'chat';
+const desktopPortraitQuery = matchMedia('(min-width: 1121px)');
+const state = { role:'PLAYER', playerId:'preview', party:[], roomState:normalizeRuntimeState(null), toastTimer:null, rollTimer:null };
+const $ = s => document.querySelector(s);
+const attrLabel = key => key==='fisico'?'Físico':key==='mente'?'Mente':'Emoção';
+
 function escapeHtml(value=''){return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
 function runtime(){return state.roomState.characters[characterId]}
 function toast(text){const el=$('#toast');el.textContent=text;el.classList.remove('hidden');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>el.classList.add('hidden'),3200)}
-function dieImg(sides,cls=''){return `<span class="die-glyph ${cls}" data-sides="${Number(sides)}" style="--die:url('./assets/dice/d${Number(sides)}.svg')" aria-label="d${Number(sides)}"></span>`}
+function dieImg(sides,cls=''){return `<img class="die-asset ${cls}" src="./assets/dice/d${Number(sides)}.png" alt="d${Number(sides)}" />`}
 function inlineDie(sides=4,cls=''){return `<span class="inline-die ${cls}" aria-label="d${sides}">${dieImg(sides)}</span>`}
-function sendMutation(operation){if(!OBR.isAvailable){state.roomState=localApply(operation);renderDynamic();return Promise.resolve()}return OBR.broadcast.sendMessage(SYNC_CHANNEL,{type:'mutation',requestId:crypto.randomUUID?.()||String(Date.now()),operation:{...operation,characterId}},{destination:'ALL'})}
-function localApply(op){const next=structuredClone(state.roomState),rt=next.characters[characterId];if(op.type==='adjust-resource')rt[op.resource]=Math.max(0,Math.min(op.resource==='pv'?character.maxPV:character.maxPD,rt[op.resource]+Number(op.delta||0)));if(op.type==='impulse-set')rt.impulse=Math.max(0,Math.min(3,Number(op.value)||0));if(op.type==='impulse-adjust')rt.impulse=Math.max(0,Math.min(3,rt.impulse+Number(op.delta||0)));if(op.type==='impulse-spend-one'&&rt.impulse>0){rt.impulse--;rt.pendingDice.push(makeBonusDie('Ímpeto','any',{effectKey:`impulse-${Date.now()}`}))}if(op.type==='impulse-spend-three'&&rt.impulse>=3){rt.impulse-=3;rt.stepMods[op.attribute]=Math.min(4,(rt.stepMods[op.attribute]||0)+1)}if(op.type==='ability-focus'&&rt.pd>=2){const key=`focus:${op.scope}`;if(!rt.pendingDice.some(d=>d.effectKey===key)){rt.pd-=2;rt.pendingDice.push(makeBonusDie(op.source,op.scope,{effectKey:key}))}}if(op.type==='ability-evaluation'&&rt.pd>=2&&rt.evaluationDice===0&&!rt.pendingDice.some(d=>d.source==='Avaliação')){rt.pd-=2;rt.evaluationDice=2}if(op.type==='evaluation-use'&&rt.evaluationDice>=Number(op.count||1)){const count=Number(op.count||1);rt.evaluationDice-=count;for(let i=0;i<count;i++)rt.pendingDice.push(makeBonusDie('Avaliação','any',{effectKey:`evaluation-${Date.now()}-${i}`}))}if(op.type==='ability-readiness'&&rt.pd>=3&&!rt.readiness){rt.pd-=3;rt.readiness=true}if(op.type==='readiness-set')rt.readiness=Boolean(op.value);if(op.type==='consume-pending'){const ids=new Set(op.ids||[]);rt.pendingDice=rt.pendingDice.filter(d=>!ids.has(d.id))}if(op.type==='step-reset')rt.stepMods={fisico:0,mente:0,emocao:0};return normalizeRuntimeState(next)}
-function renderStatic(){document.documentElement.style.setProperty('--accent',character.accent);$('#name').textContent=character.name;$('#preloadName').textContent=character.name;$('#profile').textContent=character.profile;$('#occupation').textContent=character.occupation;$('#level').textContent=character.level;$('#portrait').src=character.portrait;$('#portrait').alt=character.name}
-function renderAttributes(){const rt=runtime();$('#attributes').innerHTML=Object.entries(character.attributes).map(([key,base])=>{const sides=stepDie(base,rt.stepMods[key]),delta=rt.stepMods[key];return `<div class="attribute-card"><span class="label">${attrLabel(key)}</span><span class="attribute-die">${dieImg(sides)}</span>${delta?`<span class="step-note">${delta>0?'+':''}${delta} PASSO${Math.abs(delta)>1?'S':''}</span>`:''}</div>`}).join('')}
-function renderSkills(){const rt=runtime();$('#skills').innerHTML=SKILL_ORDER.map(key=>{const skill=character.skills[key],attr=skill.attribute,attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);return `<div class="skill-row"><span class="skill-name" title="${escapeHtml(labelSkill(character,key))}">${escapeHtml(labelSkill(character,key))}</span><span class="die-icon">${dieImg(skill.die)}</span><span class="plus">+</span><span class="die-icon">${dieImg(attrSides)}</span><span class="attr-name">${attrLabel(attr)}</span><button class="roll-skill" data-skill="${key}">ROLAR</button></div>`}).join('');$('#skills').querySelectorAll('[data-skill]').forEach(btn=>btn.addEventListener('click',()=>rollSkill(btn.dataset.skill)))}
+
+function sendMutation(operation){
+  if (!OBR.isAvailable) { state.roomState = localApply(operation); renderDynamic(); return Promise.resolve(); }
+  return OBR.broadcast.sendMessage(SYNC_CHANNEL,{type:'mutation',requestId:crypto.randomUUID?.()||String(Date.now()),operation:{...operation,characterId}},{destination:'ALL'});
+}
+
+function localApply(op){
+  const next=structuredClone(state.roomState),rt=next.characters[characterId];
+  if(op.type==='adjust-resource')rt[op.resource]=Math.max(0,Math.min(op.resource==='pv'?character.maxPV:character.maxPD,rt[op.resource]+Number(op.delta||0)));
+  if(op.type==='impulse-set')rt.impulse=Math.max(0,Math.min(3,Number(op.value)||0));
+  if(op.type==='impulse-adjust')rt.impulse=Math.max(0,Math.min(3,rt.impulse+Number(op.delta||0)));
+  if(op.type==='impulse-spend-one'&&rt.impulse>0){rt.impulse--;rt.pendingDice.push(makeBonusDie('Ímpeto','any',{effectKey:`impulse-${Date.now()}`}))}
+  if(op.type==='impulse-spend-three'&&rt.impulse>=3){rt.impulse-=3;rt.stepMods[op.attribute]=Math.min(4,(rt.stepMods[op.attribute]||0)+1)}
+  if(op.type==='ability-focus'&&rt.pd>=2){const key=`focus:${op.scope}`;if(!rt.pendingDice.some(d=>d.effectKey===key)){rt.pd-=2;rt.pendingDice.push(makeBonusDie(op.source,op.scope,{effectKey:key}))}}
+  if(op.type==='ability-evaluation'&&rt.pd>=2&&rt.evaluationDice===0&&!rt.pendingDice.some(d=>d.source==='Avaliação')){rt.pd-=2;rt.evaluationDice=2}
+  if(op.type==='evaluation-use'&&rt.evaluationDice>=Number(op.count||1)){const count=Number(op.count||1);rt.evaluationDice-=count;for(let i=0;i<count;i++)rt.pendingDice.push(makeBonusDie('Avaliação','any',{effectKey:`evaluation-${Date.now()}-${i}`}))}
+  if(op.type==='ability-readiness'&&rt.pd>=3&&!rt.readiness){rt.pd-=3;rt.readiness=true}
+  if(op.type==='readiness-set')rt.readiness=Boolean(op.value);
+  if(op.type==='consume-pending'){const ids=new Set(op.ids||[]);rt.pendingDice=rt.pendingDice.filter(d=>!ids.has(d.id))}
+  if(op.type==='step-reset')rt.stepMods={fisico:0,mente:0,emocao:0};
+  return normalizeRuntimeState(next);
+}
+
+function syncPortraitAsset(){const stage=$('.portrait-stage');if(!stage||!character)return;let img=$('#portrait');if(desktopPortraitQuery.matches){if(!img){img=document.createElement('img');img.id='portrait';stage.appendChild(img)}if(img.getAttribute('src')!==character.portrait)img.src=character.portrait;img.alt=character.name}else if(img){img.remove()}}
+function renderStatic(){
+  document.documentElement.style.setProperty('--accent',character.accent);
+  $('#name').textContent=character.name;$('#preloadName').textContent=character.name;$('#profile').textContent=character.profile;$('#occupation').textContent=character.occupation;$('#level').textContent=character.level;syncPortraitAsset();
+  if(openedFromChat){const close=$('#close');close.querySelector('span').textContent='VOLTAR AO CHAT'}
+}
+
+function renderAttributes(){
+  const rt=runtime();
+  $('#attributes').innerHTML=Object.entries(character.attributes).map(([key,base])=>{
+    const sides=stepDie(base,rt.stepMods[key]);const delta=rt.stepMods[key];
+    return `<div class="attribute-card"><span class="label">${attrLabel(key)}</span><span class="attribute-die">${dieImg(sides)}</span>${delta?`<span class="step-note">${delta>0?'+':''}${delta} PASSO${Math.abs(delta)>1?'S':''}</span>`:''}</div>`;
+  }).join('');
+}
+
+function renderSkills(){
+  const rt=runtime();
+  $('#skills').innerHTML=SKILL_ORDER.map(key=>{
+    const skill=character.skills[key],attr=skill.attribute,attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);
+    return `<div class="skill-row">
+      <span class="skill-name" title="${escapeHtml(labelSkill(character,key))}">${escapeHtml(labelSkill(character,key))}</span>
+      <span class="die-icon-wrap">${dieImg(skill.die)}</span>
+      <span class="plus">+</span>
+      <span class="die-icon-wrap">${dieImg(attrSides)}</span>
+      <span class="attr-name">${attrLabel(attr)}</span>
+      <button class="roll-skill" data-skill="${key}">ROLAR</button>
+    </div>`;
+  }).join('');
+  $('#skills').querySelectorAll('[data-skill]').forEach(btn=>btn.addEventListener('click',()=>rollSkill(btn.dataset.skill)));
+}
+
 function pips(value,max){return Array.from({length:max},(_,i)=>`<span class="pip ${i<value?'on':''}"></span>`).join('')}
 function renderResources(){const rt=runtime();$('#pvValue').textContent=rt.pv;$('#pvMax').textContent=character.maxPV;$('#pdValue').textContent=rt.pd;$('#pdMax').textContent=character.maxPD;$('#pvPips').innerHTML=pips(rt.pv,character.maxPV);$('#pdPips').innerHTML=pips(rt.pd,character.maxPD)}
-function bolts(count){return `<span class="bolt-stack">${Array.from({length:count},()=>'<i class="bolt-icon"></i>').join('')}</span>`}
+
+function bolts(count){return `<span class="bolt-stack" aria-label="${count} espaço${count>1?'s':''} de ímpeto">${Array.from({length:count},()=>'<i class="bolt-icon"></i>').join('')}</span>`}
 function abilityCost(ability){if(['foco-mental','foco-emocional','avaliacao'].includes(ability.id))return'2 PD';if(ability.id==='prontidao')return'3 PD';return''}
-function formatAbilityText(text){let out=escapeHtml(text);out=out.replace(/dois dados d4/gi,`${inlineDie(4)} ${inlineDie(4)}`);out=out.replace(/um dado d4/gi,`${inlineDie(4)}`);out=out.replace(/(\+)?d4/gi,(_,plus)=>`${plus?'+ ':''}${inlineDie(4)}`);out=out.replace(/\b(2|3) PD\b/g,'<strong class="mechanic">$&</strong>');out=out.replace(/\b(teste mental|teste emocional|teste|atributo|passo|rodada)\b/gi,'<strong class="mechanic">$&</strong>');return out}
-function evaluationCounts(rt){const queued=rt.pendingDice.filter(d=>d.source==='Avaliação').length;return{available:rt.evaluationDice||0,queued,total:(rt.evaluationDice||0)+queued}}
-function abilityActions(ability){const rt=runtime();if(ability.id==='foco-mental'){const active=rt.pendingDice.some(d=>d.effectKey==='focus:mente'||(d.source==='Foco Mental'&&d.scope==='mente'));return `<div class="ability-actions"><button data-action="focus-mental" ${active||rt.pd<2?'disabled':''}>+ ${inlineDie(4)} NO PRÓXIMO TESTE MENTAL</button></div>`}if(ability.id==='foco-emocional'){const active=rt.pendingDice.some(d=>d.effectKey==='focus:emocao'||(d.source==='Foco Emocional'&&d.scope==='emocao'));return `<div class="ability-actions"><button data-action="focus-emotional" ${active||rt.pd<2?'disabled':''}>+ ${inlineDie(4)} NO PRÓXIMO TESTE EMOCIONAL</button></div>`}if(ability.id==='avaliacao'){const ev=evaluationCounts(rt);if(ev.total===0)return `<div class="ability-actions"><button data-action="evaluation" ${rt.pd<2?'disabled':''}>${inlineDie(4)} ${inlineDie(4)} DE AVALIAÇÃO</button></div>`;let pool='';for(let i=0;i<ev.queued;i++)pool+=`<button class="eval-die prepared" disabled title="Preparado para o próximo teste">${inlineDie(4,'prepared')}</button>`;for(let i=0;i<ev.available;i++)pool+=`<button class="eval-die available" data-eval-use="1" title="Preparar este dado para o próximo teste">${inlineDie(4)}</button>`;return `<div class="evaluation-pool"><span>DADOS DE AVALIAÇÃO</span><div class="evaluation-dice">${pool}</div><small>CLIQUE EM UM DADO PARA PREPARÁ-LO.</small></div>`}if(ability.id==='prontidao')return `<div class="ability-actions">${rt.readiness?'<button data-action="readiness-clear">ENCERRAR PRONTIDÃO</button>':`<button data-action="readiness" ${rt.pd<3?'disabled':''}>ATIVAR RODADA ANTECIPADA</button>`}</div>`;if(ability.id==='impeto')return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions impulse-actions"><button class="impulse-cost" data-action="impulse-one" ${rt.impulse<1?'disabled':''}>${bolts(1)}<span>+ ${inlineDie(4)} NO TESTE</span></button><button class="impulse-cost" data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO FÍSICO</span></button><button class="impulse-cost" data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO MENTE</span></button><button class="impulse-cost" data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO EMOÇÃO</span></button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">ENCERRAR AUMENTOS DE PASSO</button>':''}</div>`;return''}
-function renderAbilities(){$('#abilities').innerHTML=character.abilities.map(a=>{const cost=abilityCost(a);return `<article class="ability-card"><div class="ability-title"><h2>${escapeHtml(a.name)}</h2>${cost?`<span class="ability-cost">${cost}</span>`:''}</div><p>${formatAbilityText(a.text)}</p>${abilityActions(a)}</article>`}).join('');$('#abilities').querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>handleAbility(btn.dataset.action)));$('#abilities').querySelectorAll('[data-impulse]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'impulse-set',value:Number(btn.dataset.impulse)})));$('#abilities').querySelectorAll('[data-impulse-three]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'impulse-spend-three',attribute:btn.dataset.impulseThree})));$('#abilities').querySelectorAll('[data-eval-use]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'evaluation-use',count:1})))}
-function renderPending(){const rt=runtime(),chips=[],seen=new Set();for(const d of rt.pendingDice){if(d.source==='Avaliação')continue;const key=d.effectKey||`${d.source}:${d.scope}`;if(seen.has(key))continue;seen.add(key);chips.push(`<div class="pending-chip"><b>${escapeHtml(d.source).toUpperCase()}</b><span class="separator">·</span><span>+ ${inlineDie(d.sides)}${d.scope!=='any'?` NO PRÓXIMO TESTE ${attrLabel(d.scope).toUpperCase()}`:''}</span></div>`)}const ev=evaluationCounts(rt);if(ev.total){const icons=Array.from({length:ev.total},()=>inlineDie(4)).join(' ');chips.push(`<div class="pending-chip"><b>AVALIAÇÃO ATIVA</b><span class="separator">·</span><span class="pending-eval-dice">${icons}</span></div>`)}if(rt.readiness)chips.push('<div class="pending-chip"><b>PRONTIDÃO ATIVA</b><span class="separator">·</span><span>RODADA ANTECIPADA</span></div>');if(!chips.length)chips.push('<div class="pending-chip empty">SEM EFEITOS TEMPORÁRIOS</div>');$('#pending').innerHTML=chips.join('')}
+function formatAbilityText(text=''){
+  const dieToken='(?:4|6|8|10|12|20)';
+  const pattern=new RegExp(`(dois dados d${dieToken}|2d${dieToken}|\\+?d${dieToken}|\\b[23] PD\\b|teste mental|teste emocional|teste|atributo|passo|rodada)`,'gi');
+  let out='',last=0;
+  for(const match of text.matchAll(pattern)){
+    out+=escapeHtml(text.slice(last,match.index));const token=match[0];
+    const dieMatch=token.match(/d(4|6|8|10|12|20)/i);
+    if(dieMatch){const sides=Number(dieMatch[1]);const pair=/^dois dados|^2d/i.test(token);out+=(token.startsWith('+')?'+':'')+inlineDie(sides)+(pair?inlineDie(sides):'');}
+    else out+=`<strong class="mechanic">${escapeHtml(token)}</strong>`;
+    last=match.index+token.length;
+  }
+  out+=escapeHtml(text.slice(last));return out;
+}
+function benefitButton(label,attrs=''){return `<button ${attrs}>${label}</button>`}
+function evaluationControls(rt){
+  const prepared=rt.pendingDice.filter(d=>d.source==='Avaliação').length;
+  const slots=[];
+  for(let i=0;i<prepared;i++)slots.push(`<button class="evaluation-die prepared" disabled aria-label="Dado de Avaliação preparado">${inlineDie(4)}<span>PREPARADO</span></button>`);
+  for(let i=0;i<rt.evaluationDice;i++)slots.push(`<button class="evaluation-die" data-eval-use="1" aria-label="Preparar um d4 de Avaliação">${inlineDie(4)}<span>PREPARAR</span></button>`);
+  while(slots.length<2)slots.push(`<span class="evaluation-die spent" aria-label="Dado de Avaliação consumido"><span class="spent-mark"></span><span>USADO</span></span>`);
+  return slots.join('');
+}
+function abilityActions(ability){
+  const rt=runtime();
+  if(ability.id==='foco-mental'){
+    const active=rt.pendingDice.some(d=>d.effectKey==='focus:mente'||(d.source==='Foco Mental'&&d.scope==='mente'));
+    return `<div class="ability-actions">${benefitButton(`+${inlineDie(4)} NO PRÓXIMO TESTE MENTAL`,active?'disabled aria-disabled="true"':'data-action="focus-mental"')}</div>`;
+  }
+  if(ability.id==='foco-emocional'){
+    const active=rt.pendingDice.some(d=>d.effectKey==='focus:emocao'||(d.source==='Foco Emocional'&&d.scope==='emocao'));
+    return `<div class="ability-actions">${benefitButton(`+${inlineDie(4)} NO PRÓXIMO TESTE EMOCIONAL`,active?'disabled aria-disabled="true"':'data-action="focus-emotional"')}</div>`;
+  }
+  if(ability.id==='avaliacao'){
+    const prepared=rt.pendingDice.filter(d=>d.source==='Avaliação').length;const active=rt.evaluationDice>0||prepared>0;
+    return `<div class="ability-actions evaluation-actions"><button data-action="evaluation" ${rt.pd<2||active?'disabled':''}>ATIVAR AVALIAÇÃO</button>${active?`<div class="evaluation-resource"><span>DADOS DE AVALIAÇÃO</span><div class="evaluation-dice">${evaluationControls(rt)}</div></div>`:''}</div>`;
+  }
+  if(ability.id==='prontidao') return `<div class="ability-actions">${rt.readiness?'<button data-action="readiness-clear">ENCERRAR PRONTIDÃO</button>':`<button data-action="readiness" ${rt.pd<3?'disabled':''}>ATIVAR RODADA ANTECIPADA</button>`}</div>`;
+  if(ability.id==='impeto') return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions impulse-actions"><button class="impulse-cost" data-action="impulse-one" ${rt.impulse<1?'disabled':''}>${bolts(1)}<span>+${inlineDie(4)} NO TESTE</span></button><button class="impulse-cost" data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO FÍSICO</span></button><button class="impulse-cost" data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO MENTE</span></button><button class="impulse-cost" data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO EMOÇÃO</span></button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">ENCERRAR AUMENTOS DE PASSO</button>':''}</div>`;
+  return '';
+}
+
+function renderAbilities(){
+  $('#abilities').innerHTML=character.abilities.map(a=>{const cost=abilityCost(a);return `<article class="ability-card"><div class="ability-title"><h2>${escapeHtml(a.name)}</h2>${cost?`<span class="ability-cost">${cost}</span>`:''}</div><p>${formatAbilityText(a.text)}</p>${abilityActions(a)}</article>`}).join('');
+  $('#abilities').querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>handleAbility(btn.dataset.action)));
+  $('#abilities').querySelectorAll('[data-impulse]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'impulse-set',value:Number(btn.dataset.impulse)})));
+  $('#abilities').querySelectorAll('[data-impulse-three]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'impulse-spend-three',attribute:btn.dataset.impulseThree})));
+  $('#abilities').querySelectorAll('[data-eval-use]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'evaluation-use',count:1})));
+}
+
+function repeatedDice(sides,count){return Array.from({length:count},()=>inlineDie(sides)).join('')}
+function renderPending(){
+  const rt=runtime(),chips=[];const seen=new Set();
+  for(const d of rt.pendingDice){
+    if(d.source==='Avaliação')continue;
+    const key=d.effectKey||`${d.source}:${d.scope}`;if(seen.has(key))continue;seen.add(key);
+    chips.push(`<div class="pending-chip"><b>${escapeHtml(d.source).toUpperCase()}</b><span class="separator">·</span><span>+${inlineDie(d.sides)}${d.scope!=='any'?` NO PRÓXIMO TESTE ${attrLabel(d.scope).toUpperCase()}`:' NO PRÓXIMO TESTE'}</span></div>`)
+  }
+  const evalPrepared=rt.pendingDice.filter(d=>d.source==='Avaliação').length;
+  if(rt.evaluationDice||evalPrepared){
+    const parts=[];if(rt.evaluationDice)parts.push(`${repeatedDice(4,rt.evaluationDice)} DISPONÍVEL${rt.evaluationDice>1?'IS':''}`);if(evalPrepared)parts.push(`${repeatedDice(4,evalPrepared)} PREPARADO${evalPrepared>1?'S':''}`);
+    chips.push(`<div class="pending-chip"><b>AVALIAÇÃO ATIVA</b><span class="separator">·</span><span>${parts.join(' · ')}</span></div>`)
+  }
+  if(rt.readiness)chips.push('<div class="pending-chip"><b>PRONTIDÃO ATIVA</b><span class="separator">·</span><span>RODADA ANTECIPADA</span></div>');
+  if(!chips.length)chips.push('<div class="pending-chip empty">SEM EFEITOS TEMPORÁRIOS</div>');
+  $('#pending').innerHTML=chips.join('');
+}
+
 function renderDynamic(){if(!character)return;renderAttributes();renderSkills();renderResources();renderAbilities();renderPending()}
 function render(){if(!character){$('#unauthorized').textContent='Personagem inexistente.';$('#unauthorized').classList.remove('hidden');return}renderStatic();const auth=!OBR.isAvailable||isAuthorized(state.roomState,characterId,state.playerId,state.role);$('#unauthorized').classList.toggle('hidden',auth);$('#sheetBody').classList.toggle('hidden',!auth);if(auth)renderDynamic()}
-async function handleAbility(action){const rt=runtime();try{if(action==='focus-mental'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-focus',source:'Foco Mental',scope:'mente'});toast('FOCO MENTAL PREPARADO.')}if(action==='focus-emotional'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-focus',source:'Foco Emocional',scope:'emocao'});toast('FOCO EMOCIONAL PREPARADO.')}if(action==='evaluation'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-evaluation'});toast('AVALIAÇÃO ATIVA · 2 DADOS DISPONÍVEIS.')}if(action==='readiness'){if(rt.pd<3)throw new Error('PD insuficiente.');await sendMutation({type:'ability-readiness'});toast('PRONTIDÃO ATIVA.')}if(action==='readiness-clear')await sendMutation({type:'readiness-set',value:false});if(action==='impulse-one')await sendMutation({type:'impulse-spend-one'});if(action==='step-reset')await sendMutation({type:'step-reset'})}catch(e){toast(e.message||String(e))}}
+
+async function handleAbility(action){
+  const rt=runtime();
+  try{
+    if(action==='focus-mental'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-focus',source:'Foco Mental',scope:'mente'});toast('FOCO MENTAL PREPARADO.');}
+    if(action==='focus-emotional'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-focus',source:'Foco Emocional',scope:'emocao'});toast('FOCO EMOCIONAL PREPARADO.');}
+    if(action==='evaluation'){if(rt.pd<2)throw new Error('PD insuficiente.');if(rt.evaluationDice>0||rt.pendingDice.some(d=>d.source==='Avaliação'))throw new Error('Avaliação já está ativa.');await sendMutation({type:'ability-evaluation'});toast('AVALIAÇÃO ATIVA · 2 DADOS DISPONÍVEIS.');}
+    if(action==='readiness'){if(rt.pd<3)throw new Error('PD insuficiente.');await sendMutation({type:'ability-readiness'});toast('PRONTIDÃO ATIVA.');}
+    if(action==='readiness-clear')await sendMutation({type:'readiness-set',value:false});
+    if(action==='impulse-one')await sendMutation({type:'impulse-spend-one'});
+    if(action==='step-reset')await sendMutation({type:'step-reset'});
+  }catch(e){toast(e.message||String(e))}
+}
+
 function resultState(result){if(result.criticalFailure)return['FALHA CRÍTICA','critical-failure'];if(result.criticalSuccess)return['SUCESSO CRÍTICO','critical-success'];if(result.success===false)return['FALHA','failure'];if(result.success===true)return['SUCESSO','success'];return['ROLAGEM','neutral']}
-function resultMarkup(result,author,closable=false){const[status,cls]=resultState(result);return `<article class="result-card ${cls}"><div class="result-head"><div><div class="result-author">${escapeHtml(author)}</div><div class="result-title">${escapeHtml(result.label)}</div></div>${closable?'<button class="rr-close" aria-label="Fechar">×</button>':''}</div><div class="result-dice">${result.dice.map(d=>`<div class="result-die"><span class="result-die-source">${escapeHtml(d.source)}</span><div class="result-die-value"><strong>${d.value}</strong>${dieImg(d.sides)}</div></div>`).join('')}</div><div class="result-summary"><div class="result-total"><span>RESULTADO</span><strong>${result.total}</strong></div><span class="result-status">${status}</span></div>${result.dice.length>3?'<div class="result-note">OS TRÊS MAIORES RESULTADOS FORAM SOMADOS.</div>':''}</article>`}
+function resultMarkup(result,author,closable=false){
+  const [status,cls]=resultState(result);
+  return `<article class="result-card ${cls}"><div class="result-head"><div><div class="result-author">${escapeHtml(author)}</div><div class="result-title">${escapeHtml(result.label)}</div></div>${closable?'<button class="rr-close" aria-label="Fechar resultado">×</button>':''}</div><div class="result-dice">${result.dice.map(d=>`<div class="result-die"><span class="result-die-source">${escapeHtml(d.source)}</span><div class="result-die-value"><strong>${d.value}</strong>${dieImg(d.sides)}</div></div>`).join('')}</div><div class="result-summary"><div class="result-total"><span>RESULTADO</span><strong>${result.total}</strong></div><span class="result-status">${status}</span></div>${result.dice.length>3?'<div class="result-note">OS TRÊS MAIORES RESULTADOS FORAM SOMADOS.</div>':''}</article>`;
+}
 function showRoll(result){const el=$('#rollResult');el.innerHTML=resultMarkup(result,character.name,true);el.classList.remove('hidden');el.querySelector('.rr-close').addEventListener('click',()=>el.classList.add('hidden'));clearTimeout(state.rollTimer);state.rollTimer=setTimeout(()=>el.classList.add('hidden'),9000)}
-async function rollSkill(key){const skill=character.skills[key];if(!skill)return;const rt=runtime(),attr=skill.attribute,attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);const eligible=rt.pendingDice.filter(d=>d.scope==='any'||d.scope===attr).slice(0,2);const dice=[{sides:attrSides,source:attrLabel(attr),kind:'attribute'},{sides:skill.die,source:labelSkill(character,key),kind:'skill'},...eligible.map(d=>({sides:d.sides,source:d.source,kind:'bonus'}))];const result=rollOp2Test({dice,dt:7,label:`${labelSkill(character,key)} + ${attrLabel(attr)}`});showRoll(result);if(eligible.length)await sendMutation({type:'consume-pending',ids:eligible.map(d=>d.id)}).catch(()=>{});if(character.profile==='Executor'&&result.success===false&&rt.impulse<3)await sendMutation({type:'impulse-adjust',delta:1}).catch(()=>{});const entry={id:crypto.randomUUID?.()||`${Date.now()}-${Math.random()}`,type:'test',createdAt:Date.now(),authorId:state.playerId,authorName:character.name,characterId:character.id,accent:character.accent,result};if(OBR.isAvailable)OBR.broadcast.sendMessage(CHAT_CHANNEL,{type:'submit',entry},{destination:'ALL'}).catch(()=>{})}
-function dismissPreloader(){setTimeout(()=>$('#preloader')?.classList.add('hide'),1000)}
-async function setup(){$('#close').addEventListener('click',()=>OBR.isAvailable?OBR.modal.close('com.op2.playtest.fichas/sheet').catch(()=>history.back()):history.back());document.querySelectorAll('[data-res]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'adjust-resource',resource:btn.dataset.res,delta:Number(btn.dataset.delta)})));if(!OBR.isAvailable){render();dismissPreloader();return}await new Promise(resolve=>OBR.onReady(resolve));[state.role,state.party]=await Promise.all([OBR.player.getRole(),OBR.party.getPlayers()]);state.playerId=OBR.player.id;const meta=await OBR.room.getMetadata();state.roomState=normalizeRuntimeState(meta[ROOM_STATE_KEY]);render();dismissPreloader();OBR.room.onMetadataChange(meta=>{if(meta[ROOM_STATE_KEY]){state.roomState=normalizeRuntimeState(meta[ROOM_STATE_KEY]);render()}});OBR.party.onChange(p=>{state.party=p;renderDynamic()});OBR.broadcast.onMessage(SYNC_CHANNEL,event=>{const d=event.data||{};if(d.type==='mutation-result'&&!d.ok&&d.error)toast(d.error)})}
+
+async function rollSkill(key){
+  const skill=character.skills[key];if(!skill)return;
+  const rt=runtime(),attr=skill.attribute,attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);
+  // Focos são obrigatórios no próximo teste do atributo compatível. Se houver
+  // mais bônus preparados do que o limite de quatro dados permite, priorize
+  // primeiro os bônus com escopo exato e mantenha os demais preparados.
+  const compatible=rt.pendingDice.filter(d=>d.scope==='any'||d.scope===attr);
+  const eligible=[...compatible.filter(d=>d.scope===attr),...compatible.filter(d=>d.scope==='any')].slice(0,2);
+  const dice=[{sides:attrSides,source:attrLabel(attr),kind:'attribute'},{sides:skill.die,source:labelSkill(character,key),kind:'skill'},...eligible.map(d=>({sides:d.sides,source:d.source,kind:'bonus'}))];
+  const result=rollOp2Test({dice,dt:7,label:`${labelSkill(character,key)} + ${attrLabel(attr)}`});
+  showRoll(result);
+  if(eligible.length)await sendMutation({type:'consume-pending',ids:eligible.map(d=>d.id)}).catch(()=>{});
+  if(character.profile==='Executor'&&result.success===false&&rt.impulse<3)await sendMutation({type:'impulse-adjust',delta:1}).catch(()=>{});
+  const entry={id:crypto.randomUUID?.()||`${Date.now()}-${Math.random()}`,type:'test',createdAt:Date.now(),authorId:state.playerId,authorName:character.name,characterId:character.id,accent:character.accent,result};
+  if(OBR.isAvailable)OBR.broadcast.sendMessage(CHAT_CHANNEL,{type:'submit',entry},{destination:'ALL'}).catch(()=>{});
+}
+
+function dismissPreloader(){setTimeout(()=>{const el=$('#preloader');if(!el)return;el.classList.add('hide');setTimeout(()=>el.remove(),360)},850)}
+async function closeSheet(){if(!OBR.isAvailable){history.back();return}try{await OBR.modal.close(SHEET_MODAL_ID)}catch{history.back()}}
+async function setup(){
+  desktopPortraitQuery.addEventListener?.('change',syncPortraitAsset);
+  $('#close').addEventListener('click',closeSheet);
+  document.querySelectorAll('[data-res]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'adjust-resource',resource:btn.dataset.res,delta:Number(btn.dataset.delta)})));
+  if(!OBR.isAvailable){render();dismissPreloader();return}
+  await new Promise(resolve=>OBR.onReady(resolve));
+  [state.role,state.party]=await Promise.all([OBR.player.getRole(),OBR.party.getPlayers()]);state.playerId=OBR.player.id;
+  const meta=await OBR.room.getMetadata();state.roomState=normalizeRuntimeState(meta[ROOM_STATE_KEY]);render();dismissPreloader();
+  OBR.room.onMetadataChange(meta=>{if(meta[ROOM_STATE_KEY]){state.roomState=normalizeRuntimeState(meta[ROOM_STATE_KEY]);render()}});
+  OBR.party.onChange(p=>{state.party=p;renderDynamic()});
+  OBR.broadcast.onMessage(SYNC_CHANNEL,event=>{const d=event.data||{};if(d.type==='mutation-result'&&!d.ok&&d.error)toast(d.error)});
+}
 setup().catch(e=>{console.error(e);toast(e.message||String(e));dismissPreloader()});

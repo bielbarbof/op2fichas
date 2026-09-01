@@ -1,18 +1,15 @@
-# OP2 Playtest Fichas v0.5.0
+# OP2 Playtest Fichas v0.5.1 — Recovery
 
-Fichas digitais comunitárias do Playtest de Ordem Paranormal RPG 2 para Owlbear Rodeo.
+Extensão comunitária não oficial para Owlbear Rodeo, baseada na v0.4.0 e reconstruída como candidata final para as fichas do Ato I do playtest de Ordem Paranormal RPG 2.
 
-## Personagens prontos
-Alan, Edgar, Eloísa, Kênia e Victor.
+## Inclui
 
-## Destaques
-- atribuição Mestre → jogador persistente;
-- ficha web em composição de três colunas alinhadas;
-- layout responsivo no mobile;
-- PV/PD, Perícias, Atributos e habilidades interativas;
-- Foco Mental/Foco Emocional, Ímpeto, Avaliação e Prontidão automatizados;
-- Avaliação como pool visual de dois d4 consumíveis;
-- resultados enviados ao OP2 Chat;
-- loading ritualístico e identidade visual inspirada no Playtest.
+- Alan, Edgar, Eloísa, Kênia e Victor.
+- Tela PERSONAGENS para o Mestre e mini-ficha para o jogador atribuído.
+- Fichas desktop em composição editorial de três regiões e layout mobile focado em praticidade.
+- PV, PD, Ímpeto, Avaliação, Focos, Prontidão e atribuições persistidos no estado da sala do Owlbear.
+- Rolagens de perícia integradas ao OP2 Playtest Chat.
+- Dados D4/D6/D8/D10/D12/D20 usando os PNGs originais fornecidos para esta build.
+- Símbolo ritualístico original no preloader e no ícone da extensão.
 
-Leia `FONT_SETUP.md` antes de publicar caso queira usar Arpona exatamente em todos os aparelhos.
+A v0.5.0 rejeitada não foi usada como base estrutural.
