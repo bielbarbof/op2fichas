@@ -1,6 +1,6 @@
 import OBR from 'https://esm.unpkg.com/@owlbear-rodeo/sdk@3.1.0';
 import { CHARACTERS, SKILL_ORDER, labelSkill, stepDie } from './characters.js';
-import { ROOM_STATE_KEY, SYNC_CHANNEL, CHAT_CHANNEL, normalizeRuntimeState, isAuthorized } from './core.js';
+import { ROOM_STATE_KEY, SYNC_CHANNEL, CHAT_CHANNEL, normalizeRuntimeState, isAuthorized, makeBonusDie } from './core.js';
 import { rollOp2Test } from './roll.js';
 
 const params = new URLSearchParams(location.search);
@@ -12,9 +12,9 @@ const attrLabel = key => key==='fisico'?'Físico':key==='mente'?'Mente':'Emoçã
 
 function escapeHtml(value=''){return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
 function runtime(){return state.roomState.characters[characterId]}
-function assignment(){return state.roomState.assignments?.[characterId] || null}
 function toast(text){const el=$('#toast');el.textContent=text;el.classList.remove('hidden');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>el.classList.add('hidden'),3200)}
 function dieImg(sides,cls=''){return `<span class="die-glyph ${cls}" style="--die:url('./assets/dice/d${Number(sides)}.svg')" aria-label="d${Number(sides)}"></span>`}
+function inlineDie(sides=4){return `<span class="inline-die" aria-label="d${sides}">${dieImg(sides)}<b>${sides}</b></span>`}
 
 function sendMutation(operation){
   if (!OBR.isAvailable) { state.roomState = localApply(operation); renderDynamic(); return Promise.resolve(); }
@@ -22,13 +22,20 @@ function sendMutation(operation){
 }
 
 function localApply(op){
-  const next=structuredClone(state.roomState);const rt=next.characters[characterId];
+  const next=structuredClone(state.roomState),rt=next.characters[characterId];
   if(op.type==='adjust-resource')rt[op.resource]=Math.max(0,Math.min(op.resource==='pv'?character.maxPV:character.maxPD,rt[op.resource]+Number(op.delta||0)));
   if(op.type==='impulse-set')rt.impulse=Math.max(0,Math.min(3,Number(op.value)||0));
   if(op.type==='impulse-adjust')rt.impulse=Math.max(0,Math.min(3,rt.impulse+Number(op.delta||0)));
-  if(op.type==='impulse-spend-one'&&rt.impulse>0){rt.impulse--;rt.pendingDice.push({id:String(Date.now()),sides:4,scope:'any',source:'Ímpeto'})}
+  if(op.type==='impulse-spend-one'&&rt.impulse>0){rt.impulse--;rt.pendingDice.push(makeBonusDie('Ímpeto','any',{effectKey:`impulse-${Date.now()}`}))}
+  if(op.type==='impulse-spend-three'&&rt.impulse>=3){rt.impulse-=3;rt.stepMods[op.attribute]=Math.min(4,(rt.stepMods[op.attribute]||0)+1)}
+  if(op.type==='ability-focus'&&rt.pd>=2){const key=`focus:${op.scope}`;if(!rt.pendingDice.some(d=>d.effectKey===key)){rt.pd-=2;rt.pendingDice.push(makeBonusDie(op.source,op.scope,{effectKey:key}))}}
+  if(op.type==='ability-evaluation'&&rt.pd>=2){rt.pd-=2;rt.evaluationDice=2}
+  if(op.type==='evaluation-use'&&rt.evaluationDice>=Number(op.count||1)){const count=Number(op.count||1);rt.evaluationDice-=count;for(let i=0;i<count;i++)rt.pendingDice.push(makeBonusDie('Avaliação','any',{effectKey:`evaluation-${Date.now()}-${i}`}))}
+  if(op.type==='ability-readiness'&&rt.pd>=3&&!rt.readiness){rt.pd-=3;rt.readiness=true}
+  if(op.type==='readiness-set')rt.readiness=Boolean(op.value);
+  if(op.type==='consume-pending'){const ids=new Set(op.ids||[]);rt.pendingDice=rt.pendingDice.filter(d=>!ids.has(d.id))}
   if(op.type==='step-reset')rt.stepMods={fisico:0,mente:0,emocao:0};
-  return next;
+  return normalizeRuntimeState(next);
 }
 
 function renderStatic(){
@@ -47,7 +54,7 @@ function renderAttributes(){
 function renderSkills(){
   const rt=runtime();
   $('#skills').innerHTML=SKILL_ORDER.map(key=>{
-    const skill=character.skills[key];const attr=skill.attribute;const attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);
+    const skill=character.skills[key],attr=skill.attribute,attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);
     return `<div class="skill-row">
       <span class="skill-name" title="${escapeHtml(labelSkill(character,key))}">${escapeHtml(labelSkill(character,key))}</span>
       <span class="die-icon-wrap"><span class="die-icon">${dieImg(skill.die)}</span><span class="die-icon-value">${skill.die}</span></span>
@@ -64,18 +71,33 @@ function pips(value,max){return Array.from({length:max},(_,i)=>`<span class="pip
 function renderResources(){const rt=runtime();$('#pvValue').textContent=rt.pv;$('#pvMax').textContent=character.maxPV;$('#pdValue').textContent=rt.pd;$('#pdMax').textContent=character.maxPD;$('#pvPips').innerHTML=pips(rt.pv,character.maxPV);$('#pdPips').innerHTML=pips(rt.pd,character.maxPD)}
 
 function bolts(count){return `<span class="bolt-stack">${Array.from({length:count},()=>'<i class="bolt-icon"></i>').join('')}</span>`}
+function abilityCost(ability){if(ability.id==='foco-mental'||ability.id==='foco-emocional'||ability.id==='avaliacao')return'2 PD';if(ability.id==='prontidao')return'3 PD';return''}
+function formatAbilityText(text){
+  let out=escapeHtml(text);
+  out=out.replace(/(\+)?d4/gi,(_,plus)=>`${plus?'+':''}${inlineDie(4)}`);
+  out=out.replace(/\b(2|3) PD\b/g,'<strong class="mechanic">$&</strong>');
+  out=out.replace(/\b(teste mental|teste emocional|teste|atributo|passo|rodada)\b/gi,'<strong class="mechanic">$&</strong>');
+  return out;
+}
+function benefitButton(label,attrs=''){return `<button ${attrs}>${label}</button>`}
 function abilityActions(ability){
   const rt=runtime();
-  if(ability.id==='foco-mental') return `<div class="ability-actions"><button data-action="focus-mental" ${rt.pd<2?'disabled':''}>GASTAR 2 PD · +D4 NO PRÓXIMO TESTE MENTAL</button></div>`;
-  if(ability.id==='foco-emocional') return `<div class="ability-actions"><button data-action="focus-emotional" ${rt.pd<2?'disabled':''}>GASTAR 2 PD · +D4 NO PRÓXIMO TESTE EMOCIONAL</button></div>`;
-  if(ability.id==='avaliacao') return `<div class="ability-actions"><button data-action="evaluation" ${rt.pd<2?'disabled':''}>GASTAR 2 PD · AVALIAR</button>${rt.evaluationDice?`<button data-eval-use="1">USAR 1D4 (${rt.evaluationDice})</button>${rt.evaluationDice>1?'<button data-eval-use="2">USAR 2D4</button>':''}`:''}</div>${rt.evaluationDice?`<span class="active-flag">AVALIAÇÃO · ${rt.evaluationDice}D4 DISPONÍVEL${rt.evaluationDice>1?'IS':''}</span>`:''}`;
-  if(ability.id==='prontidao') return `<div class="ability-actions">${rt.readiness?'<button data-action="readiness-clear">PRONTIDÃO ATIVA · ENCERRAR</button>':`<button data-action="readiness" ${rt.pd<3?'disabled':''}>GASTAR 3 PD · ATIVAR PRONTIDÃO</button>`}</div>`;
-  if(ability.id==='impeto') return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions"><button class="impulse-cost" data-action="impulse-one" ${rt.impulse<1?'disabled':''}>${bolts(1)}<span>+D4 NO TESTE</span></button><button class="impulse-cost" data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO FÍSICO</span></button><button class="impulse-cost" data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO MENTE</span></button><button class="impulse-cost" data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO EMOÇÃO</span></button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">FIM DA CENA · LIMPAR PASSOS</button>':''}</div>`;
+  if(ability.id==='foco-mental'){
+    const active=rt.pendingDice.some(d=>d.effectKey==='focus:mente'||(d.source==='Foco Mental'&&d.scope==='mente'));
+    return `<div class="ability-actions">${benefitButton(`+${inlineDie(4)} NO PRÓXIMO TESTE MENTAL`,active?'disabled aria-disabled="true"':'data-action="focus-mental"')}</div>`;
+  }
+  if(ability.id==='foco-emocional'){
+    const active=rt.pendingDice.some(d=>d.effectKey==='focus:emocao'||(d.source==='Foco Emocional'&&d.scope==='emocao'));
+    return `<div class="ability-actions">${benefitButton(`+${inlineDie(4)} NO PRÓXIMO TESTE EMOCIONAL`,active?'disabled aria-disabled="true"':'data-action="focus-emotional"')}</div>`;
+  }
+  if(ability.id==='avaliacao') return `<div class="ability-actions"><button data-action="evaluation" ${rt.pd<2||rt.evaluationDice>=2?'disabled':''}>RECEBER 2 ${inlineDie(4)} DE AVALIAÇÃO</button>${rt.evaluationDice?`<button data-eval-use="1">USAR ${inlineDie(4)} (${rt.evaluationDice})</button>${rt.evaluationDice>1?`<button data-eval-use="2">USAR 2 ${inlineDie(4)}</button>`:''}`:''}</div>`;
+  if(ability.id==='prontidao') return `<div class="ability-actions">${rt.readiness?'<button data-action="readiness-clear">ENCERRAR PRONTIDÃO</button>':`<button data-action="readiness" ${rt.pd<3?'disabled':''}>ATIVAR RODADA ANTECIPADA</button>`}</div>`;
+  if(ability.id==='impeto') return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions impulse-actions"><button class="impulse-cost" data-action="impulse-one" ${rt.impulse<1?'disabled':''}>${bolts(1)}<span>+${inlineDie(4)} NO TESTE</span></button><button class="impulse-cost" data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO FÍSICO</span></button><button class="impulse-cost" data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO MENTE</span></button><button class="impulse-cost" data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO EMOÇÃO</span></button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">ENCERRAR AUMENTOS DE PASSO</button>':''}</div>`;
   return '';
 }
 
 function renderAbilities(){
-  $('#abilities').innerHTML=character.abilities.map(a=>`<article class="ability-card"><div class="ability-title"><h2>${escapeHtml(a.name)}</h2></div><p>${escapeHtml(a.text)}</p>${abilityActions(a)}</article>`).join('');
+  $('#abilities').innerHTML=character.abilities.map(a=>{const cost=abilityCost(a);return `<article class="ability-card"><div class="ability-title"><h2>${escapeHtml(a.name)}</h2>${cost?`<span class="ability-cost">${cost}</span>`:''}</div><p>${formatAbilityText(a.text)}</p>${abilityActions(a)}</article>`}).join('');
   $('#abilities').querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>handleAbility(btn.dataset.action)));
   $('#abilities').querySelectorAll('[data-impulse]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'impulse-set',value:Number(btn.dataset.impulse)})));
   $('#abilities').querySelectorAll('[data-impulse-three]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'impulse-spend-three',attribute:btn.dataset.impulseThree})));
@@ -83,8 +105,10 @@ function renderAbilities(){
 }
 
 function renderPending(){
-  const rt=runtime();const chips=[];
-  for(const d of rt.pendingDice)chips.push(`<div class="pending-chip"><b>${escapeHtml(d.source).toUpperCase()}</b><span class="separator">·</span><span>+D${d.sides}${d.scope!=='any'?` · ${attrLabel(d.scope).toUpperCase()}`:''}</span></div>`);
+  const rt=runtime(),chips=[];
+  const seen=new Set();
+  for(const d of rt.pendingDice){const key=d.effectKey||`${d.source}:${d.scope}`;if(seen.has(key))continue;seen.add(key);chips.push(`<div class="pending-chip"><b>${escapeHtml(d.source).toUpperCase()}</b><span class="separator">·</span><span>+${inlineDie(d.sides)}${d.scope!=='any'?` NO PRÓXIMO TESTE ${attrLabel(d.scope).toUpperCase()}`:''}</span></div>`)}
+  if(rt.evaluationDice)chips.push(`<div class="pending-chip"><b>AVALIAÇÃO</b><span class="separator">·</span><span>${rt.evaluationDice} ${inlineDie(4)} DISPONÍVEL${rt.evaluationDice>1?'IS':''}</span></div>`);
   if(rt.readiness)chips.push('<div class="pending-chip"><b>PRONTIDÃO ATIVA</b><span class="separator">·</span><span>RODADA ANTECIPADA</span></div>');
   if(!chips.length)chips.push('<div class="pending-chip empty">SEM EFEITOS TEMPORÁRIOS</div>');
   $('#pending').innerHTML=chips.join('');
@@ -96,9 +120,9 @@ function render(){if(!character){$('#unauthorized').textContent='Personagem inex
 async function handleAbility(action){
   const rt=runtime();
   try{
-    if(action==='focus-mental'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-focus',source:'Foco Mental',scope:'mente'});toast('FOCO MENTAL PREPARADO · +D4 NO PRÓXIMO TESTE MENTAL.');}
-    if(action==='focus-emotional'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-focus',source:'Foco Emocional',scope:'emocao'});toast('FOCO EMOCIONAL PREPARADO · +D4 NO PRÓXIMO TESTE EMOCIONAL.');}
-    if(action==='evaluation'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-evaluation'});toast('AVALIAÇÃO · 2D4 DISPONÍVEIS.');}
+    if(action==='focus-mental'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-focus',source:'Foco Mental',scope:'mente'});toast('FOCO MENTAL PREPARADO.');}
+    if(action==='focus-emotional'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-focus',source:'Foco Emocional',scope:'emocao'});toast('FOCO EMOCIONAL PREPARADO.');}
+    if(action==='evaluation'){if(rt.pd<2)throw new Error('PD insuficiente.');await sendMutation({type:'ability-evaluation'});toast('AVALIAÇÃO PREPARADA · 2 DADOS DISPONÍVEIS.');}
     if(action==='readiness'){if(rt.pd<3)throw new Error('PD insuficiente.');await sendMutation({type:'ability-readiness'});toast('PRONTIDÃO ATIVA.');}
     if(action==='readiness-clear')await sendMutation({type:'readiness-set',value:false});
     if(action==='impulse-one')await sendMutation({type:'impulse-spend-one'});
@@ -106,19 +130,19 @@ async function handleAbility(action){
   }catch(e){toast(e.message||String(e))}
 }
 
-function resultState(result){if(result.criticalFailure)return['FALHA CRÍTICA','critical-failure'];if(result.criticalSuccess)return['SUCESSO CRÍTICO','critical-success'];if(result.success===false)return['FALHA','failure'];if(result.success===true)return['SUCESSO','success'];return['ROLAGEM','neutral']}
-function showRoll(result){
-  const el=$('#rollResult');const [status,cls]=resultState(result);
-  el.innerHTML=`<article class="result-card ${cls}" style="${cls==='neutral'?`--result-accent:${character.accent}`:''}"><div class="result-head"><div><div class="result-author">${escapeHtml(character.name)}</div><div class="result-title">${escapeHtml(result.label)}</div></div><button class="rr-close">×</button></div><div class="result-dice">${result.dice.map(d=>`<div class="result-die"><div class="result-die-top">${dieImg(d.sides)}<span>${escapeHtml(d.source)}</span></div><strong>${d.value}</strong></div>`).join('')}</div><div class="result-main"><div class="result-total"><span>RESULTADO</span><strong>${result.total}</strong></div><div class="result-metric"><span>RA</span><strong>${result.ra}</strong></div><div class="result-metric"><span>RB</span><strong>${result.rb}</strong></div></div><div class="result-bottom"><span class="result-status">${status}</span><span class="result-dt">DT ${result.dt??'—'}</span></div>${result.dice.length>3?'<div class="result-note">Soma dos três maiores resultados.</div>':''}</article>`;
-  el.classList.remove('hidden');el.querySelector('.rr-close').addEventListener('click',()=>el.classList.add('hidden'));clearTimeout(state.rollTimer);state.rollTimer=setTimeout(()=>el.classList.add('hidden'),9000);
+function resultState(result){if(result.criticalFailure)return['FALHA CRÍTICA','critical-failure','×'];if(result.criticalSuccess)return['SUCESSO CRÍTICO','critical-success','✦'];if(result.success===false)return['FALHA','failure','×'];if(result.success===true)return['SUCESSO','success','✓'];return['ROLAGEM','neutral','•']}
+function resultMarkup(result,author,closable=false){
+  const [status,cls,icon]=resultState(result);
+  return `<article class="result-card ${cls}"><div class="result-head"><div><div class="result-author">${escapeHtml(author)}</div><div class="result-title">${escapeHtml(result.label)}</div></div>${closable?'<button class="rr-close" aria-label="Fechar">×</button>':''}</div><div class="result-dice">${result.dice.map(d=>`<div class="result-die"><span class="result-die-source">${escapeHtml(d.source)}</span><div class="result-die-value"><strong>${d.value}</strong>${dieImg(d.sides)}</div></div>`).join('')}</div><div class="result-summary"><div class="result-total"><span>RESULTADO</span><strong>${result.total}</strong></div><span class="result-status">${status}</span><span class="result-emblem" aria-hidden="true"><i>${icon}</i></span></div>${result.dice.length>3?'<div class="result-note">OS TRÊS MAIORES RESULTADOS FORAM SOMADOS.</div>':''}</article>`;
 }
+function showRoll(result){const el=$('#rollResult');el.innerHTML=resultMarkup(result,character.name,true);el.classList.remove('hidden');el.querySelector('.rr-close').addEventListener('click',()=>el.classList.add('hidden'));clearTimeout(state.rollTimer);state.rollTimer=setTimeout(()=>el.classList.add('hidden'),9000)}
 
 async function rollSkill(key){
   const skill=character.skills[key];if(!skill)return;
-  const rt=runtime();const override=$('#attributeOverride').value;const attr=override==='base'?skill.attribute:override;const attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);
+  const rt=runtime(),attr=skill.attribute,attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);
   const eligible=rt.pendingDice.filter(d=>d.scope==='any'||d.scope===attr).slice(0,2);
   const dice=[{sides:attrSides,source:attrLabel(attr),kind:'attribute'},{sides:skill.die,source:labelSkill(character,key),kind:'skill'},...eligible.map(d=>({sides:d.sides,source:d.source,kind:'bonus'}))];
-  const dt=Number($('#dtInput').value||7);const result=rollOp2Test({dice,dt,label:`${labelSkill(character,key)} + ${attrLabel(attr)}`});
+  const result=rollOp2Test({dice,dt:7,label:`${labelSkill(character,key)} + ${attrLabel(attr)}`});
   showRoll(result);
   if(eligible.length)await sendMutation({type:'consume-pending',ids:eligible.map(d=>d.id)}).catch(()=>{});
   if(character.profile==='Executor'&&result.success===false&&rt.impulse<3)await sendMutation({type:'impulse-adjust',delta:1}).catch(()=>{});
@@ -126,7 +150,7 @@ async function rollSkill(key){
   if(OBR.isAvailable)OBR.broadcast.sendMessage(CHAT_CHANNEL,{type:'submit',entry},{destination:'ALL'}).catch(()=>{});
 }
 
-function dismissPreloader(){setTimeout(()=>$('#preloader')?.classList.add('hide'),850)}
+function dismissPreloader(){setTimeout(()=>$('#preloader')?.classList.add('hide'),1000)}
 async function setup(){
   $('#close').addEventListener('click',()=>OBR.isAvailable?OBR.modal.close('com.op2.playtest.fichas/sheet').catch(()=>history.back()):history.back());
   document.querySelectorAll('[data-res]').forEach(btn=>btn.addEventListener('click',()=>sendMutation({type:'adjust-resource',resource:btn.dataset.res,delta:Number(btn.dataset.delta)})));

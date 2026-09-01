@@ -1,19 +1,15 @@
-# OP2 Playtest Fichas — v0.2.0
+# Changelog — v0.4.0
 
-## Visual
-- Ficha redesenhada para se aproximar da identidade editorial do Playtest Alpha.
-- Removido o microcabeçalho superior.
-- Atributos movidos para cima de PV e PD.
-- Perícias mostram os ícones de dado sem o prefixo “d”, o atributo-base ao lado e botão **ROLAR** limpo.
-- Botões de habilidades usam contorno temático e recebem preenchimento no hover.
-- PV e PD usam controles simples **− / +**.
-
-## Personagens
-- Alan, Edgar, Eloísa, Kênia e Victor agora usam as artes de corpo inteiro fornecidas.
-- Tela de seleção usa recortes de perfil/busto derivados dessas artes.
-- Área central da ficha exibe o personagem em corpo inteiro.
-
-## Experiência
-- Nova tela de carregamento de aproximadamente 1 segundo com símbolo ritualístico ao fundo.
-- Pop-up de rolagem redesenhado para ser visualmente equivalente ao card do OP2 Playtest Chat.
-- Automações de Ímpeto, Avaliação, Foco e Prontidão foram preservadas.
+- Cabeçalho de personagem reorganizado com perfil, ocupação e nível em composição editorial.
+- DT/Atributo removidos do topo das Perícias; grade de perícias realinhada.
+- Personagem central ampliado e área de arte limpa.
+- Atributos e PV/PD separados visualmente; marcadores de PV/PD com maior respiro.
+- Símbolo PNG oficial fornecido pelo projeto aplicado ao pré-carregamento e ícone das Fichas.
+- Tipografia reestruturada: Agharti em títulos principais, Arpona Bold em botões/forms, Arpona Light em corpo.
+- Custos em PD movidos para tags discretas junto aos poderes; botões mostram o benefício.
+- Foco Mental/Foco Emocional deduplicados, aplicados automaticamente e consumidos no teste compatível.
+- Avaliação, Prontidão e Ímpeto revisados; mutações do estado agora são serializadas pelo GM.
+- Efeitos temporários reorganizados no cabeçalho.
+- Cards de rolagem de Ficha e Chat unificados e simplificados; RA/RB/DT removidos da apresentação.
+- Resumo do jogador redesenhado com token maior, dados gráficos e PV/PD segmentados.
+- Preparação Rápida e cards do Mestre realinhados.

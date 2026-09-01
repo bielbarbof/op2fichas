@@ -1,15 +1,8 @@
-# Assets oficiais pendentes de montagem
+# Assets — v0.4.0
 
-A v0.3.0 foi preparada para usar EXCLUSIVAMENTE os SVGs fornecidos pelo autor da mesa.
-Os fallbacks da v0.2.0 foram removidos intencionalmente.
+- `assets/ui/loading-symbol.png`: PNG fornecido pelo projeto e usado diretamente no carregamento/ícone das Fichas.
+- `assets/tokens/*.png`: retratos fornecidos para a tela de personagens.
+- `assets/characters/*.png`: artes de corpo inteiro fornecidas para as fichas.
+- `assets/dice/d4.svg` ... `d20.svg`: geometria vetorial revisada para aproximar o padrão visual mostrado no playtest.
 
-Arquivos esperados:
-- assets/dice/d4.svg
-- assets/dice/d6.svg
-- assets/dice/d8.svg
-- assets/dice/d10.svg
-- assets/dice/d12.svg
-- assets/dice/d20.svg
-- assets/ui/ritual-symbol.svg
-
-O manifest das Fichas já aponta para `assets/ui/ritual-symbol.svg`.
+Nenhum arquivo binário de fonte é distribuído neste pacote.

@@ -10,15 +10,27 @@
 </head>
 <body>
   <div id="preloader" class="preloader" aria-hidden="true">
-    <img src="./assets/ui/ritual-symbol.svg" class="preloader-symbol" alt="" />
+    <img src="./assets/ui/loading-symbol.png" class="preloader-symbol" alt="" />
     <div class="preloader-copy"><strong id="preloadName">...</strong><span>CARREGANDO FICHA</span></div>
   </div>
+
   <main id="sheet" class="sheet-shell">
     <header class="sheet-header">
       <div class="header-title">
-        <div class="name-row"><h1 id="name">...</h1><span id="profile" class="profile-tag">...</span><span class="dot">•</span><span id="occupation" class="occupation">...</span><span class="dot">•</span><span class="level-label">NÍVEL <b id="level">2</b></span></div>
+        <div class="name-row">
+          <h1 id="name">...</h1>
+          <span id="profile" class="profile-tag">...</span>
+          <span class="dot">•</span>
+          <span id="occupation" class="occupation">...</span>
+          <span class="dot">•</span>
+          <span class="level-word">NÍVEL</span>
+          <b id="level" class="level-badge">2</b>
+        </div>
       </div>
-      <div class="header-tools"><div id="pending" class="pending-panel"></div><button id="close" class="close-btn" aria-label="Fechar">×</button></div>
+      <div class="header-tools">
+        <div id="pending" class="pending-panel"></div>
+        <button id="close" class="close-btn" aria-label="Fechar">×</button>
+      </div>
     </header>
 
     <section id="unauthorized" class="unauthorized hidden">Esta ficha não está atribuída a você.</section>
@@ -27,10 +39,6 @@
       <aside class="left-column">
         <section class="block skills-block">
           <div class="block-head"><div class="ribbon">PERÍCIAS</div></div>
-          <div class="skills-toolbar">
-            <label class="dt-control">DT<input id="dtInput" type="number" min="1" max="99" value="7" /></label>
-            <label class="attribute-control">ATRIBUTO<select id="attributeOverride"><option value="base">BASE</option><option value="fisico">FÍSICO</option><option value="mente">MENTE</option><option value="emocao">EMOÇÃO</option></select></label>
-          </div>
           <div id="skills" class="skills"></div>
         </section>
       </aside>
@@ -44,6 +52,7 @@
           <div class="ribbon">ATRIBUTOS</div>
           <div id="attributes" class="attributes"></div>
         </section>
+        <div class="resource-divider" aria-hidden="true"></div>
         <section class="resources">
           <article class="resource-card pv-card">
             <div class="resource-head"><span>PV</span><strong><b id="pvValue">0</b>/<span id="pvMax">0</span></strong></div>
