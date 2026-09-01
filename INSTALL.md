@@ -1,9 +1,7 @@
-# Instalação
-
-1. Hospede o conteúdo desta pasta em um endereço HTTPS público (Render, Vercel, GitHub Pages ou equivalente).
-2. No Owlbear Rodeo, adicione uma extensão customizada apontando para:
-   `https://SEU-ENDERECO/manifest.json`
-3. Ative **OP2 Playtest Fichas** na sala.
-4. O mestre abre a extensão e atribui os personagens aos jogadores.
-
-Recomenda-se instalar também **OP2 Playtest Chat** para registrar automaticamente as rolagens feitas pela ficha.
+# Atualização pelo GitHub Desktop / Render
+1. Substitua os arquivos do repositório pela pasta desta versão.
+2. GitHub Desktop: **Commit to main**.
+3. Clique em **Push origin**.
+4. O Render redeploya o Static Site automaticamente.
+5. Mantenha o header CORS no Render: `/*` → `Access-Control-Allow-Origin` → `*`.
+6. O manifest continua em `/manifest.json`; não é necessário remover e reinstalar a extensão se a URL não mudou.
