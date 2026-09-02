@@ -1,6 +1,16 @@
 # Changelog
 
-## 0.6.4
+## 0.6.5
+
+- Arpona SemiBold incorporada e aplicada no lugar dos antigos usos de Arpona Bold em Fichas e Chat.
+- Destaques das habilidades revisados personagem por personagem a partir das fichas originais fornecidas.
+- Perícias refinadas com Special Elite levemente maior e sinal de soma mais fino.
+- Labels de atributos aproximados da tipografia do nome dos personagens.
+- Prontidão recebeu ação de encerramento vermelha e custos em PD ganharam forma menos quadrada.
+- Tela de carregamento ganhou progresso real por etapas de fontes/assets/Owlbear e nome ampliado.
+- Selo comunitário preservado no carregamento.
+
+## 0.6.5
 
 - Polimento final de tipografia e layout para desktop e mobile.
 - Special Elite aplicada exclusivamente aos nomes das perícias nas Fichas.

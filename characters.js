@@ -35,8 +35,8 @@ export const CHARACTERS = {
       pontaria:s(4,"fisico"), sobrevivencia:s(4,"mente"), tecnologia:s(4,"mente"), vigor:s(6,"fisico")
     },
     abilities: [
-      { id:"foco-mental", name:"Foco Mental", text:"Quando faz um teste mental, você pode gastar 2 PD para receber +d4 no teste.", action:"focusMental" },
-      { id:"impeto", name:"Ímpeto", text:"Você possui uma barra de ímpeto com três espaços. Sempre que falha em um teste, preenche um espaço. Pode apagar 1 espaço para receber +d4 em um teste, ou apagar 3 espaços para aumentar um atributo em um passo até o fim da cena.", tracker:"impulse" }
+      { id:"foco-mental", name:"Foco Mental", text:"Quando faz um teste mental, você pode gastar 2 PD para receber +d4 no teste.", highlights:["teste mental","2 PD"], action:"focusMental" },
+      { id:"impeto", name:"Ímpeto", text:"Você possui uma barra de ímpeto com três espaços. Sempre que falha em um teste, você preenche um espaço na barra. Você pode apagar espaços preenchidos para receber +d4 em um teste, ou apagar três espaços para aumentar um atributo em um passo até o fim da cena.", highlights:["barra de ímpeto","espaços","falha","teste","atributo","passo"], highlightOnce:["espaços"], tracker:"impulse" }
     ]
   },
   edgar: {
@@ -51,8 +51,8 @@ export const CHARACTERS = {
       pontaria:s(4,"fisico"), sobrevivencia:s(6,"mente"), tecnologia:s(4,"mente"), vigor:s(6,"fisico")
     },
     abilities: [
-      { id:"esforco-suor", name:"Esforço e Suor", text:"Você possui uma perícia física aumentada para d6 (já contabilizado na ficha)." },
-      { id:"impeto", name:"Ímpeto", text:"Você possui uma barra de ímpeto com três espaços. Sempre que falha em um teste, preenche um espaço. Pode apagar 1 espaço para receber +d4 em um teste, ou apagar 3 espaços para aumentar um atributo em um passo até o fim da cena.", tracker:"impulse" }
+      { id:"esforco-suor", name:"Esforço e Suor", text:"Você possui uma perícia física aumentada para d6 (já contabilizado na ficha).", highlights:[] },
+      { id:"impeto", name:"Ímpeto", text:"Você possui uma barra de ímpeto com três espaços. Sempre que falha em um teste, você preenche um espaço na barra. Você pode apagar espaços preenchidos para receber +d4 em um teste, ou apagar três espaços para aumentar um atributo em um passo até o fim da cena.", highlights:["barra de ímpeto","espaços","falha","teste","atributo","passo"], highlightOnce:["espaços"], tracker:"impulse" }
     ]
   },
   eloisa: {
@@ -67,8 +67,8 @@ export const CHARACTERS = {
       pontaria:s(4,"fisico"), sobrevivencia:s(4,"mente"), tecnologia:s(6,"mente"), vigor:s(4,"fisico")
     },
     abilities: [
-      { id:"avaliacao", name:"Avaliação", text:"Você pode gastar uma ação e 2 PD para observar um ser ou um ambiente. Você recebe 2d4 que pode usar em testes relativos àquele ser ou ambiente (você pode usá-los como quiser, recebendo +2d4 em um teste ou +d4 em dois testes). Você não pode acumular mais do que dois dados bônus por esta habilidade.", action:"evaluation" },
-      { id:"foco-emocional", name:"Foco Emocional", text:"Quando faz um teste emocional, você pode gastar 2 PD para receber +d4 no teste.", action:"focusEmotional" }
+      { id:"avaliacao", name:"Avaliação", text:"Você pode gastar uma ação e 2 PD para observar um ser ou um ambiente. Você recebe 2d4 que pode usar em testes relativos àquele ser ou ambiente (você pode usá-los como quiser, recebendo +2d4 em um teste ou +d4 em dois testes). Você não pode acumular mais do que dois dados bônus por esta habilidade.", highlights:["uma ação e 2 PD"], action:"evaluation" },
+      { id:"foco-emocional", name:"Foco Emocional", text:"Quando faz um teste emocional, você pode gastar 2 PD para receber +d4 no teste.", highlights:["teste emocional","2 PD"], action:"focusEmotional" }
     ]
   },
   kenia: {
@@ -83,8 +83,8 @@ export const CHARACTERS = {
       pontaria:s(4,"fisico"), sobrevivencia:s(4,"mente"), tecnologia:s(8,"mente"), vigor:s(6,"fisico")
     },
     abilities: [
-      { id:"avaliacao", name:"Avaliação", text:"Você pode gastar uma ação e 2 PD para observar um ser ou um ambiente. Você recebe 2d4 que pode usar em testes relativos àquele ser ou ambiente (você pode usá-los como quiser, recebendo +2d4 em um teste ou +d4 em dois testes). Você não pode acumular mais do que dois dados bônus por esta habilidade.", action:"evaluation" },
-      { id:"conhecimento-tecnico", name:"Conhecimento Técnico", text:"Você possui uma perícia mental aumentada para d6 (este aumento já está contabilizado na ficha)." }
+      { id:"avaliacao", name:"Avaliação", text:"Você pode gastar uma ação e 2 PD para observar um ser ou um ambiente. Você recebe 2d4 que pode usar em testes relativos àquele ser ou ambiente (você pode usá-los como quiser, recebendo +2d4 em um teste ou +d4 em dois testes). Você não pode acumular mais do que dois dados bônus por esta habilidade.", highlights:["uma ação e 2 PD"], action:"evaluation" },
+      { id:"conhecimento-tecnico", name:"Conhecimento Técnico", text:"Você possui uma perícia mental aumentada para d6 (este aumento já está contabilizado na ficha).", highlights:[] }
     ]
   },
   victor: {
@@ -99,8 +99,8 @@ export const CHARACTERS = {
       pontaria:s(4,"fisico"), sobrevivencia:s(4,"mente"), tecnologia:s(4,"mente"), vigor:s(6,"fisico")
     },
     abilities: [
-      { id:"mentoria", name:"Mentoria", text:"Quando ajuda outro personagem, você pode fazer um teste da perícia que usou para ajudar contra DT 7. Se passar, o personagem ajudado pode substituir um dos dados rolados por ele pela sua rolagem alta." },
-      { id:"prontidao", name:"Prontidão", text:"No início de qualquer conflito, você pode gastar 3 PD. Se fizer isso, ganha uma rodada na qual pode agir antes dos demais personagens e NPCs.", action:"readiness" }
+      { id:"mentoria", name:"Mentoria", text:"Quando ajuda outro personagem, você pode fazer um teste da perícia que usou para ajudar contra DT 7. Se passar, o personagem ajudado pode substituir um dos dados rolados por ele pela sua rolagem alta.", highlights:["ajuda","DT 7"] },
+      { id:"prontidao", name:"Prontidão", text:"No início de qualquer conflito, você pode gastar 3 PD. Se fizer isso, ganha uma rodada na qual pode agir antes dos demais personagens e NPCs.", highlights:["3 PD","ganha uma rodada"], action:"readiness" }
     ]
   }
 };

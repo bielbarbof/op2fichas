@@ -15,6 +15,8 @@
 * {
   box-sizing: border-box;
 }
+
+b,strong { font-weight: 600; }
 html,body {
   margin: 0;
   width: 100%;
@@ -112,7 +114,7 @@ button {
 }
 .profile-tag {
   font-family: var(--font-button);
-  font-weight: 900;
+  font-weight: 600;
   text-transform: uppercase;
   font-size: 14px;
   background: var(--accent);
@@ -121,9 +123,9 @@ button {
   clip-path: polygon(4% 0,100% 7%,94% 100%,0 88%);
 }
 .occupation,.level-word {
-  font-family: var(--font-button);
+  font-family: var(--font-heading);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: .025em;
   text-transform: uppercase;
 }
@@ -141,7 +143,7 @@ button {
   color: #fff;
   font-family: var(--font-button);
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1;
   clip-path: polygon(5% 7%,91% 0,100% 84%,14% 100%,0 18%);
 }
@@ -179,7 +181,7 @@ button {
 .pending-chip b {
   display: inline-flex;
   align-items: center;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--accent);
   line-height: 1;
 }
@@ -289,7 +291,7 @@ button {
   display: inline-block;
   margin: 0;
   font-family: var(--font-button);
-  font-weight: 900;
+  font-weight: 600;
   text-transform: uppercase;
   background: var(--accent);
   color: #fff;
@@ -305,7 +307,7 @@ button {
 }
 .skill-row {
   display: grid;
-  grid-template-columns: minmax(126px,1fr) 38px 14px 38px 64px 66px;
+  grid-template-columns: minmax(142px,1fr) 38px 18px 38px 64px 66px;
   column-gap: 5px;
   align-items: center;
   min-height: 40px;
@@ -316,7 +318,7 @@ button {
 }
 .skill-name {
   font-family: var(--font-skill);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   letter-spacing: .01em;
   text-transform: uppercase;
@@ -338,9 +340,10 @@ button {
 }
 .plus {
   color: var(--accent);
-  font-family: var(--font-button);
-  font-size: 20px;
-  font-weight: 900;
+  font-family: var(--font-ui);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
   text-align: center;
 }
 .attr-name {
@@ -422,9 +425,10 @@ button {
   text-align: center;
 }
 .attribute-card .label {
-  font-family: var(--font-button);
-  font-weight: 900;
-  font-size: 18px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1;
   text-transform: uppercase;
 }
 .attribute-die {
@@ -440,7 +444,7 @@ button {
 .step-note {
   font-family: var(--font-button);
   font-size: 9px;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--accent);
   text-transform: uppercase;
 }
@@ -469,7 +473,7 @@ button {
 }
 .resource-head>span {
   font-family: var(--font-button);
-  font-weight: 900;
+  font-weight: 600;
   font-size: 20px;
   background: var(--accent);
   color: white;
@@ -480,7 +484,7 @@ button {
 .resource-head strong {
   font-family: var(--font-button);
   font-size: 21px;
-  font-weight: 900;
+  font-weight: 600;
   white-space: nowrap;
 }
 .pips {
@@ -518,7 +522,7 @@ button {
   color: #f3eee5;
   font-family: var(--font-button);
   font-size: 27px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1;
   cursor: pointer;
 }
@@ -549,12 +553,13 @@ button {
 .ability-cost {
   font-family: var(--font-button);
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
   color: #d0c9be;
-  border: 1px solid #55514b;
-  background: #151515;
-  padding: 6px 9px;
+  border: 0;
+  background: #181716;
+  padding: 7px 11px;
   text-transform: uppercase;
+  clip-path: polygon(7% 2%,100% 0,94% 83%,100% 100%,4% 96%,0 17%);
 }
 .ability-card p {
   margin: 0;
@@ -566,7 +571,7 @@ button {
 }
 .mechanic {
   font-family: var(--font-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent);
 }
 .mechanic-symbol {
@@ -615,6 +620,16 @@ button {
   background: var(--accent);
   color: #fff;
   outline: none;
+}
+.ability-actions button.danger-action {
+  border-color: #c93b31;
+  background: #a92c24;
+  color: #fff;
+}
+.ability-actions button.danger-action:hover:not(:disabled),.ability-actions button.danger-action:focus-visible:not(:disabled),.ability-actions button.danger-action:active:not(:disabled) {
+  border-color: #ef5a4d;
+  background: #c93b31;
+  color: #fff;
 }
 .ability-actions button:disabled {
   border-color: #3a3733;
@@ -681,7 +696,7 @@ button {
   display: block;
   font-family: var(--font-button);
   font-size: 9px;
-  font-weight: 900;
+  font-weight: 600;
   color: #aaa399;
   letter-spacing: .04em;
   margin-bottom: 8px;
@@ -726,7 +741,7 @@ button {
   min-height: 54px;
   font-family: var(--font-button);
   font-size: 9px;
-  font-weight: 900;
+  font-weight: 600;
   opacity: .72;
 }
 .evaluation-die.spent .inline-die {
@@ -785,14 +800,14 @@ button {
 .result-author {
   font-family: var(--font-roll);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--result-accent);
   text-transform: uppercase;
 }
 .result-title {
   font-family: var(--font-roll);
   font-size: 25px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.05;
   text-transform: uppercase;
   margin-top: 3px;
@@ -826,7 +841,7 @@ button {
   display: block;
   font-family: var(--font-roll);
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   color: #aaa398;
   text-transform: uppercase;
   white-space: nowrap;
@@ -842,7 +857,7 @@ button {
 .result-die-value strong {
   font-family: var(--font-roll);
   font-size: 35px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: .95;
 }
 .result-die-value .die-asset {
@@ -865,14 +880,14 @@ button {
 .result-total span {
   font-family: var(--font-roll);
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   color: #91897f;
   text-transform: uppercase;
 }
 .result-total strong {
   font-family: var(--font-roll);
   font-size: 42px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: .9;
 }
 .result-status {
@@ -882,14 +897,14 @@ button {
   color: #fff;
   font-family: var(--font-roll);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
   text-transform: uppercase;
   clip-path: polygon(3% 0,100% 6%,94% 100%,0 88%);
 }
 .result-note {
   font-family: var(--font-roll);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   color: #827b72;
   margin-top: 8px;
 }
@@ -905,7 +920,7 @@ button {
   padding: 11px 15px;
   font-family: var(--font-button);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   box-shadow: 0 12px 40px #000;
 }
 .preloader {
@@ -942,20 +957,29 @@ button {
 }
 .preloader-copy strong {
   font-family: var(--font-display);
-  font-size: 64px;
+  font-size: clamp(58px,5.2vw,76px);
   font-weight: 400;
-  line-height: .98;
+  line-height: .94;
   color: var(--accent);
   text-transform: uppercase;
 }
-.preloader-copy span {
-  font-family: var(--font-button);
-  font-weight: 900;
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: #d2ccc1;
+.preloader-progress {
+  width: min(280px,62vw);
+  height: 3px;
+  margin-top: 5px;
+  overflow: hidden;
+  background: #211f1c;
+  border: 0;
+}
+.preloader-progress>span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: #8b857c;
+  transition: width .2s ease,background .18s ease;
+}
+.preloader-progress.complete>span {
+  background: var(--accent);
 }
 @media (max-width:1120px) {
   .sheet-header {
@@ -1003,7 +1027,7 @@ button {
     grid-template-columns: minmax(112px,1fr) 36px 13px 36px 58px 62px;
   }
   .skill-name {
-    font-size: 11px;
+    font-size: 12px;
   }
   .roll-skill {
     width: 62px;
@@ -1132,9 +1156,9 @@ button {
   font-family: var(--font-display);
   font-weight: 400;
 }
-.profile-tag,.occupation,.level-word,.level-badge,.ribbon,.ability-title h2,.ability-cost,.plus,.attribute-card .label,.step-note,.resource-head>span,.evaluation-resource>span,.pending-chip b {
+.profile-tag,.occupation,.level-word,.level-badge,.ribbon,.ability-title h2,.ability-cost,.step-note,.resource-head>span,.evaluation-resource>span,.pending-chip b {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 600;
 }
 .ability-card p {
   font-family: var(--font-body);
@@ -1155,5 +1179,5 @@ button {
 }
 .rr-close {
   font-family: var(--font-button);
-  font-weight: 700;
+  font-weight: 600;
 }

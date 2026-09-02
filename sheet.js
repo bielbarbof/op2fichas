@@ -111,8 +111,20 @@ function renderResources(){const rt=runtime();$('#pvValue').textContent=rt.pv;$(
 
 function bolts(count){return `<span class="bolt-stack" aria-label="${count} espaço${count>1?'s':''} de ímpeto">${Array.from({length:count},()=>'<i class="bolt-icon"></i>').join('')}</span>`}
 function abilityCost(ability){if(['foco-mental','foco-emocional','avaliacao'].includes(ability.id))return'2 PD';if(ability.id==='prontidao')return'3 PD';return''}
-function formatAbilityText(text=''){
-  const pattern=/(dois dados d(?:4|6|8|10|12|20)|\+?2d(?:4|6|8|10|12|20)|\+?d(?:4|6|8|10|12|20)|\b[23] PD\b|teste mental|teste emocional|teste|atributo|passo|rodada)/gi;
+function formatAbilityText(ability){
+  const text=ability?.text||'';
+  const highlightTerms=[...(ability?.highlights||[])].sort((a,b)=>b.length-a.length);
+  const highlightOnce=new Set((ability?.highlightOnce||[]).map(x=>String(x).toLocaleLowerCase('pt-BR')));
+  const seenHighlights=new Map();
+  const escapeRegex=value=>String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const termPattern=value=>`\\b${escapeRegex(value)}\\b`;
+  const parts=[
+    'dois dados d(?:4|6|8|10|12|20)',
+    '\\+?2d(?:4|6|8|10|12|20)',
+    '\\+?d(?:4|6|8|10|12|20)',
+    ...highlightTerms.map(termPattern)
+  ];
+  const pattern=new RegExp(`(${parts.join('|')})`,'gi');
   let out='',last=0;
   for(const match of text.matchAll(pattern)){
     out+=escapeHtml(text.slice(last,match.index));const token=match[0];
@@ -122,7 +134,10 @@ function formatAbilityText(text=''){
       const pair=/^\+?(?:dois dados|2d)/i.test(token);
       if(token.startsWith('+'))out+='<strong class="mechanic mechanic-symbol">+</strong>';
       out+=inlineMechanicDie(sides)+(pair?inlineMechanicDie(sides):'');
-    } else out+=`<strong class="mechanic">${escapeHtml(token)}</strong>`;
+    } else {
+      const key=token.toLocaleLowerCase('pt-BR');const seen=seenHighlights.get(key)||0;seenHighlights.set(key,seen+1);
+      out+=highlightOnce.has(key)&&seen>0?escapeHtml(token):`<strong class="mechanic">${escapeHtml(token)}</strong>`;
+    }
     last=match.index+token.length;
   }
   out+=escapeHtml(text.slice(last));return out;
@@ -151,13 +166,13 @@ function abilityActions(ability){
     const prepared=rt.pendingDice.filter(d=>d.source==='Avaliação').length;const active=rt.evaluationDice>0||prepared>0;
     return `<div class="ability-actions evaluation-actions"><button data-action="evaluation" ${rt.pd<2||active?'disabled':''}>ATIVAR AVALIAÇÃO</button>${active?`<div class="evaluation-resource"><span>DADOS DE AVALIAÇÃO</span><div class="evaluation-dice">${evaluationControls(rt)}</div></div>`:''}</div>`;
   }
-  if(ability.id==='prontidao') return `<div class="ability-actions">${rt.readiness?'<button data-action="readiness-clear">ENCERRAR PRONTIDÃO</button>':`<button data-action="readiness" ${rt.pd<3?'disabled':''}>ATIVAR RODADA ANTECIPADA</button>`}</div>`;
+  if(ability.id==='prontidao') return `<div class="ability-actions">${rt.readiness?'<button class="danger-action" data-action="readiness-clear">ENCERRAR PRONTIDÃO</button>':`<button data-action="readiness" ${rt.pd<3?'disabled':''}>ATIVAR RODADA ANTECIPADA</button>`}</div>`;
   if(ability.id==='impeto') return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions impulse-actions"><button class="impulse-cost" data-action="impulse-one" ${rt.impulse<1?'disabled':''}>${bolts(1)}<span>+${inlineMechanicDie(4)} NO TESTE</span></button><button class="impulse-cost" data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO FÍSICO</span></button><button class="impulse-cost" data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO MENTE</span></button><button class="impulse-cost" data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO EMOÇÃO</span></button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">ENCERRAR AUMENTOS DE PASSO</button>':''}</div>`;
   return '';
 }
 
 function renderAbilities(){
-  $('#abilities').innerHTML=character.abilities.map(a=>{const cost=abilityCost(a);return `<article class="ability-card"><div class="ability-title"><h2>${escapeHtml(a.name)}</h2>${cost?`<span class="ability-cost">${cost}</span>`:''}</div><p>${formatAbilityText(a.text)}</p>${abilityActions(a)}</article>`}).join('');
+  $('#abilities').innerHTML=character.abilities.map(a=>{const cost=abilityCost(a);return `<article class="ability-card"><div class="ability-title"><h2>${escapeHtml(a.name)}</h2>${cost?`<span class="ability-cost">${cost}</span>`:''}</div><p>${formatAbilityText(a)}</p>${abilityActions(a)}</article>`}).join('');
   $('#abilities').querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>handleAbility(btn.dataset.action)));
   $('#abilities').querySelectorAll('[data-impulse]').forEach(btn=>btn.addEventListener('click',()=>safeMutation({type:'impulse-set',value:Number(btn.dataset.impulse)})));
   $('#abilities').querySelectorAll('[data-impulse-three]').forEach(btn=>btn.addEventListener('click',()=>safeMutation({type:'impulse-spend-three',attribute:btn.dataset.impulseThree})));
@@ -227,16 +242,31 @@ async function rollSkill(key){
   if(OBR.isAvailable)OBR.broadcast.sendMessage(CHAT_CHANNEL,{type:'submit',entry},{destination:'ALL'}).catch(()=>{});
 }
 
-function dismissPreloader(){setTimeout(()=>{const el=$('#preloader');if(!el)return;el.classList.add('hide');setTimeout(()=>el.remove(),360)},850)}
+function setPreloadProgress(value,complete=false){
+  const bar=$('#preloadProgress');if(!bar)return;
+  const pct=Math.max(0,Math.min(100,Math.round(Number(value)||0)));
+  bar.setAttribute('aria-valuenow',String(pct));bar.querySelector('span').style.width=`${pct}%`;
+  bar.classList.toggle('complete',complete||pct>=100);
+}
+function preloadImage(src){return new Promise(resolve=>{const img=new Image();img.onload=img.onerror=()=>resolve();img.src=src})}
+async function preloadCharacterAssets(){
+  if(!character)return;
+  const profile=character.profile.toLowerCase();
+  const urls=[character.portrait,character.token,'./assets/ui/community-license.png',...([4,6,8,10,12,20].map(s=>`./assets/dice/profile/${profile}/d${s}.png`))];
+  await Promise.all(urls.map(preloadImage));
+}
+function dismissPreloader(){setPreloadProgress(100,true);setTimeout(()=>{const el=$('#preloader');if(!el)return;el.classList.add('hide');setTimeout(()=>el.remove(),360)},260)}
 async function closeSheet(){if(!OBR.isAvailable){history.back();return}try{await OBR.modal.close(SHEET_MODAL_ID)}catch{history.back()}}
 async function setup(){
   desktopPortraitQuery.addEventListener?.('change',syncPortraitAsset);
   $('#close').addEventListener('click',closeSheet);
   document.querySelectorAll('[data-res]').forEach(btn=>btn.addEventListener('click',()=>safeMutation({type:'adjust-resource',resource:btn.dataset.res,delta:Number(btn.dataset.delta)})));
+  renderStatic();setPreloadProgress(18);
+  await Promise.all([document.fonts?.ready||Promise.resolve(),preloadCharacterAssets()]);setPreloadProgress(72);
   if(!OBR.isAvailable){render();dismissPreloader();return}
-  await new Promise(resolve=>OBR.onReady(resolve));
+  await new Promise(resolve=>OBR.onReady(resolve));setPreloadProgress(84);
   [state.role,state.party]=await Promise.all([OBR.player.getRole(),OBR.party.getPlayers()]);state.playerId=OBR.player.id;
-  const meta=await OBR.room.getMetadata();state.roomState=normalizeRuntimeState(meta[ROOM_STATE_KEY]);render();dismissPreloader();
+  const meta=await OBR.room.getMetadata();state.roomState=normalizeRuntimeState(meta[ROOM_STATE_KEY]);setPreloadProgress(94);render();dismissPreloader();
   OBR.room.onMetadataChange(meta=>{if(meta[ROOM_STATE_KEY]){state.roomState=normalizeRuntimeState(meta[ROOM_STATE_KEY]);render()}});
   OBR.party.onChange(p=>{state.party=p;renderDynamic()});
   OBR.broadcast.onMessage(SYNC_CHANNEL,event=>{
