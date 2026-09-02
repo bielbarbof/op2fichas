@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.4
+
+- Release de compatibilidade com a otimização de abertura do Chat v0.7.4; fichas, regras, estados, sincronização e persistência permanecem inalterados.
+
 ## 0.7.3
 
 - Release de compatibilidade com o painel lateral persistente do Chat v0.7.3; regras, fichas, estados e persistência permanecem inalterados.
