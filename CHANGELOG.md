@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.3
+
+- Release de compatibilidade com o painel lateral persistente do Chat v0.7.3; regras, fichas, estados e persistência permanecem inalterados.
+
 ## 0.7.2
 
 - Reorganiza o cabeçalho mobile para `[nível] • perfil • ocupação`, com fechamento na mesma linha e efeitos temporários realocados após Atributos.
