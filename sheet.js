@@ -2,6 +2,7 @@ import OBR from 'https://esm.unpkg.com/@owlbear-rodeo/sdk@3.1.0';
 import { CHARACTERS, SKILL_ORDER, labelSkill, stepDie } from './characters.js';
 import { ROOM_STATE_KEY, SYNC_CHANNEL, CHAT_CHANNEL, SHEET_MODAL_ID, normalizeRuntimeState, isAuthorized, makeBonusDie, applyOperation, validateStateSize } from './core.js';
 import { rollOp2Test } from './roll.js';
+import { renderResultCard } from './roll-card.js';
 
 const params = new URLSearchParams(location.search);
 const characterId = params.get('id') || 'alan';
@@ -172,9 +173,9 @@ function abilityActions(ability){
 }
 
 function renderAbilities(){
-  $('#abilities').innerHTML=character.abilities.map(a=>{const cost=abilityCost(a);return `<article class="ability-card"><div class="ability-title"><h2>${escapeHtml(a.name)}</h2>${cost?`<span class="ability-cost">${cost}</span>`:''}</div><p>${formatAbilityText(a)}</p>${abilityActions(a)}</article>`}).join('');
+  $('#abilities').innerHTML=character.abilities.map(a=>{const cost=abilityCost(a);return `<article class="ability-card ability-${escapeHtml(a.id)}"><div class="ability-title"><h2>${escapeHtml(a.name)}</h2>${cost?`<span class="ability-cost">${cost}</span>`:''}</div><p>${formatAbilityText(a)}</p>${abilityActions(a)}</article>`}).join('');
   $('#abilities').querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>handleAbility(btn.dataset.action)));
-  $('#abilities').querySelectorAll('[data-impulse]').forEach(btn=>btn.addEventListener('click',()=>safeMutation({type:'impulse-set',value:Number(btn.dataset.impulse)})));
+  $('#abilities').querySelectorAll('[data-impulse]').forEach(btn=>btn.addEventListener('click',()=>{const n=Number(btn.dataset.impulse);const current=runtime().impulse;safeMutation({type:'impulse-set',value:current>=n?n-1:n})}));
   $('#abilities').querySelectorAll('[data-impulse-three]').forEach(btn=>btn.addEventListener('click',()=>safeMutation({type:'impulse-spend-three',attribute:btn.dataset.impulseThree})));
   $('#abilities').querySelectorAll('[data-eval-use]').forEach(btn=>btn.addEventListener('click',()=>safeMutation({type:'evaluation-use',count:1})));
 }
@@ -216,12 +217,14 @@ async function handleAbility(action){
   }catch(e){toast(e.message||String(e))}
 }
 
-function resultState(result){if(result.criticalFailure)return['FALHA CRÍTICA','critical-failure'];if(result.criticalSuccess)return['SUCESSO CRÍTICO','critical-success'];if(result.success===false)return['FALHA','failure'];if(result.success===true)return['SUCESSO','success'];return['ROLAGEM','neutral']}
-function resultMarkup(result,author,closable=false){
-  const [status,cls]=resultState(result);
-  return `<article class="result-card ${cls}"><div class="result-head"><div><div class="result-author">${escapeHtml(author)}</div><div class="result-title">${escapeHtml(result.label)}</div></div>${closable?'<button class="rr-close" aria-label="Fechar resultado">×</button>':''}</div><div class="result-dice">${result.dice.map(d=>`<div class="result-die"><span class="result-die-source">${escapeHtml(d.source)}</span><div class="result-die-value">${dieImg(d.sides)}<strong>${d.value}</strong></div></div>`).join('')}</div><div class="result-summary"><div class="result-total"><span>RESULTADO</span><strong>${result.total}</strong></div><span class="result-status">${status}</span></div>${result.dice.length>3?'<div class="result-note">OS TRÊS MAIORES RESULTADOS FORAM SOMADOS.</div>':''}</article>`;
+function showRoll(result){
+  const el=$('#rollResult');
+  const action='<button class="delete" data-close-roll aria-label="Fechar resultado" title="Fechar">×</button>';
+  el.innerHTML=renderResultCard({result,authorName:character.name,accent:character.accent,createdAt:result.createdAt,actionHtml:action});
+  el.classList.remove('hidden');
+  el.querySelector('[data-close-roll]').addEventListener('click',()=>el.classList.add('hidden'));
+  clearTimeout(state.rollTimer);state.rollTimer=setTimeout(()=>el.classList.add('hidden'),9000);
 }
-function showRoll(result){const el=$('#rollResult');el.innerHTML=resultMarkup(result,character.name,true);el.classList.remove('hidden');el.querySelector('.rr-close').addEventListener('click',()=>el.classList.add('hidden'));clearTimeout(state.rollTimer);state.rollTimer=setTimeout(()=>el.classList.add('hidden'),9000)}
 
 async function rollSkill(key){
   const skill=character.skills[key];if(!skill)return;
@@ -230,7 +233,7 @@ async function rollSkill(key){
   const compatible=rt.pendingDice.filter(d=>d.scope==='any'||d.scope===attr);
   const eligible=[...compatible.filter(d=>d.scope===attr),...compatible.filter(d=>d.scope==='any')].slice(0,2);
   const dice=[{sides:attrSides,source:attrLabel(attr),kind:'attribute'},{sides:skill.die,source:labelSkill(character,key),kind:'skill'},...eligible.map(d=>({sides:d.sides,source:d.source,kind:'bonus'}))];
-  const result=rollOp2Test({dice,dt:7,label:`${labelSkill(character,key)} + ${attrLabel(attr)}`});
+  const result=rollOp2Test({dice,dt:state.roomState.testDt,label:`${labelSkill(character,key)} + ${attrLabel(attr)}`});
   showRoll(result);
   const consumedIds=eligible.map(d=>d.id);
   const failed=result.success===false;

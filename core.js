@@ -26,7 +26,9 @@ function normalizePendingDie(x) {
 export function normalizeRuntimeState(raw) {
   const base = defaultRuntimeState();
   if (!raw || typeof raw !== 'object') return base;
-  base.v = 2;
+  base.v = 3;
+  const dt = Number(raw.testDt);
+  base.testDt = Number.isFinite(dt) && dt > 0 ? Math.trunc(dt) : null;
   if (raw.assignments && typeof raw.assignments === 'object') {
     for (const id of Object.keys(CHARACTERS)) {
       const a = raw.assignments[id];
@@ -86,6 +88,14 @@ function hasPending(runtime, effectKey) {
 
 export function applyOperation(stateInput, operation, sender) {
   const state = normalizeRuntimeState(stateInput);
+  if (operation?.type === 'dt-set') {
+    if (sender.role !== 'GM') throw new Error('Somente o Mestre pode alterar a DT.');
+    const value = Number(operation.value);
+    state.testDt = Number.isFinite(value) && value > 0 ? Math.trunc(value) : null;
+    const size = validateStateSize(state);
+    if (!size.ok) throw new Error(`Estado das fichas excederia ${(size.bytes/1024).toFixed(1)} KB.`);
+    return state;
+  }
   const id = String(operation?.characterId || '');
   const runtime = state.characters[id];
   const character = CHARACTERS[id];

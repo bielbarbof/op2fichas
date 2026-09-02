@@ -1,26 +1,24 @@
 # Changelog
 
+## 0.7.0
+
+- Fichas passaram a reconhecer a DT compartilhada definida pelo Mestre no Chat.
+- Cards de rolagem foram unificados com o componente do Chat, incluindo sucesso, falha e estados críticos.
+- Ímpeto ganhou controle manual completo e mantém preenchimento automático quando a falha é inequivocamente conhecida.
+- Cabeçalho mobile simplificado para perfil, ocupação e número do nível.
+- Botão de fechamento centralizado, nomes das perícias realinhados e tela de carregamento refinada.
+- Badges de PD levemente ampliados e ribbons ganharam variações de silhueta inspiradas nas fichas de referência.
+- Persistência anterior é migrada automaticamente para o estado v3, preservando personagens, recursos, atribuições e efeitos.
+
 ## 0.6.5
 
-- Arpona SemiBold incorporada e aplicada no lugar dos antigos usos de Arpona Bold em Fichas e Chat.
-- Destaques das habilidades revisados personagem por personagem a partir das fichas originais fornecidas.
-- Perícias refinadas com Special Elite levemente maior e sinal de soma mais fino.
-- Labels de atributos aproximados da tipografia do nome dos personagens.
-- Prontidão recebeu ação de encerramento vermelha e custos em PD ganharam forma menos quadrada.
-- Tela de carregamento ganhou progresso real por etapas de fontes/assets/Owlbear e nome ampliado.
-- Selo comunitário preservado no carregamento.
+- Arpona SemiBold incorporada, Special Elite refinada e destaques das habilidades revisados contra as fichas originais.
+- Prontidão recebeu ação de encerramento vermelha; tela de carregamento e custos em PD foram refinados.
 
-## 0.6.5
+## 0.6.4
 
-- Polimento final de tipografia e layout para desktop e mobile.
-- Special Elite aplicada exclusivamente aos nomes das perícias nas Fichas.
-- Equalização óptica dos dados d4, d6, d8, d10, d12 e d20 em todo o ecossistema.
-- Ajustes de contraste dos dados em interações, atributos da prévia do Mestre, select de atribuição e status temporários.
-- Arpona Medium incorporada para controles intermediários.
-- Documentação pública, avisos de licença e estrutura de release revisados.
-- Persistência e chaves de sincronização da v0.6.3 preservadas.
-- Tela de carregamento das fichas centralizada com precisão, selo comunitário reposicionado acima do nome e elemento decorativo de fundo removido.
+- Equalização óptica dos dados, revisão responsiva, documentação e limpeza da estrutura pública.
 
 ## 0.6.3
 
-- Base estável utilizada para esta release.
+- Base estável utilizada pelas releases seguintes.

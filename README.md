@@ -1,7 +1,6 @@
-# OP2 Playtest Fichas — v0.6.5
+# OP2 Playtest Fichas — v0.7.0
 
 Este é um conteúdo não oficial, publicado sob a Licença da Comunidade de Ordem Paranormal.
-
 
 Extensão gratuita para Owlbear Rodeo com as fichas dos cinco sobreviventes do Playtest Alpha. Reúne atributos, perícias, PV/PD, habilidades, efeitos temporários e rolagens integradas ao OP2 Playtest Chat.
 
@@ -11,15 +10,15 @@ Hospede o conteúdo desta pasta em HTTPS e cadastre a URL do `manifest.json` no 
 
 ## Uso
 
-O Mestre atribui um sobrevivente a cada jogador. A ficha completa permite acompanhar PV, PD, habilidades, Ímpeto, Avaliação, Prontidão e efeitos preparados. As rolagens de perícia usam atributo + perícia e podem ser enviadas ao Chat.
+O Mestre atribui um sobrevivente a cada jogador. A ficha completa acompanha PV, PD, Ímpeto, Avaliação, Prontidão e efeitos preparados. A DT definida pelo Mestre no Chat é reconhecida pelas rolagens da Ficha: com DT ativa, os cards mostram sucesso ou falha; sem DT, resultados comuns permanecem neutros.
 
-Fichas e Chat compartilham o mesmo estado persistido da sala do Owlbear para atribuições e recursos de personagem. As chaves de persistência da v0.6.3 foram preservadas, portanto a atualização não exige migração manual.
+Ímpeto mantém automação quando a falha é conhecida pela extensão e também pode ser ajustado manualmente diretamente na barra.
 
 ## Compatibilidade e privacidade
 
 - Desenvolvido para Owlbear Rodeo com SDK 3.1.0.
 - O SDK é carregado pelo endereço público `esm.unpkg.com`; é necessária conexão de rede para esse carregamento.
-- O código da extensão não vende nem envia PV, PD, atribuições ou histórico para um serviço próprio; o estado compartilhado permanece no ambiente da sala do Owlbear.
+- O estado compartilhado permanece nos metadados da sala do Owlbear.
 
 ## Créditos e licença
 

@@ -107,7 +107,8 @@ export const CHARACTERS = {
 
 export function defaultRuntimeState() {
   return {
-    v: 2,
+    v: 3,
+    testDt: null,
     assignments: {},
     characters: Object.fromEntries(Object.values(CHARACTERS).map(c => [c.id, {
       pv: c.maxPV, pd: c.maxPD, impulse: 0, evaluationDice: 0, readiness: false,
