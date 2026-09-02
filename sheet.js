@@ -78,7 +78,7 @@ function localApply(op){
 
 function syncPortraitAsset(){const stage=$('.portrait-stage');if(!stage||!character)return;let img=$('#portrait');if(desktopPortraitQuery.matches){if(!img){img=document.createElement('img');img.id='portrait';stage.appendChild(img)}if(img.getAttribute('src')!==character.portrait)img.src=character.portrait;img.alt=character.name}else if(img){img.remove()}}
 function renderStatic(){
-  document.documentElement.style.setProperty('--accent',character.accent);
+  document.documentElement.style.setProperty('--accent',character.accent);document.body.dataset.profile=character.profile.toLowerCase();
   $('#name').textContent=character.name;$('#preloadName').textContent=character.name;$('#profile').textContent=character.profile;$('#occupation').textContent=character.occupation;$('#level').textContent=character.level;syncPortraitAsset();
   if(openedFromChat){const close=$('#close');close.querySelector('span').textContent='VOLTAR AO CHAT'}
 }
@@ -168,7 +168,7 @@ function abilityActions(ability){
     return `<div class="ability-actions evaluation-actions"><button data-action="evaluation" ${rt.pd<2||active?'disabled':''}>ATIVAR AVALIAÇÃO</button>${active?`<div class="evaluation-resource"><span>DADOS DE AVALIAÇÃO</span><div class="evaluation-dice">${evaluationControls(rt)}</div></div>`:''}</div>`;
   }
   if(ability.id==='prontidao') return `<div class="ability-actions">${rt.readiness?'<button class="danger-action" data-action="readiness-clear">ENCERRAR PRONTIDÃO</button>':`<button data-action="readiness" ${rt.pd<3?'disabled':''}>ATIVAR RODADA ANTECIPADA</button>`}</div>`;
-  if(ability.id==='impeto') return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions impulse-actions"><button class="impulse-cost" data-action="impulse-one" ${rt.impulse<1?'disabled':''}>${bolts(1)}<span>+${inlineMechanicDie(4)} NO TESTE</span></button><button class="impulse-cost" data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO FÍSICO</span></button><button class="impulse-cost" data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO MENTE</span></button><button class="impulse-cost" data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span>+1 PASSO EMOÇÃO</span></button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">ENCERRAR AUMENTOS DE PASSO</button>':''}</div>`;
+  if(ability.id==='impeto') return `<div class="impulse">${[1,2,3].map(n=>`<button class="impulse-slot ${rt.impulse>=n?'on':''}" data-impulse="${n}" aria-label="Ímpeto ${n}"></button>`).join('')}</div><div class="ability-actions impulse-actions"><button class="impulse-cost" data-action="impulse-one" ${rt.impulse<1?'disabled':''}>${bolts(1)}<span>+${inlineMechanicDie(4)} NO TESTE</span></button><button class="impulse-cost" data-impulse-three="fisico" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span><strong class="impulse-step-phrase">+ UM PASSO</strong> FÍSICO</span></button><button class="impulse-cost" data-impulse-three="mente" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span><strong class="impulse-step-phrase">+ UM PASSO</strong> MENTE</span></button><button class="impulse-cost" data-impulse-three="emocao" ${rt.impulse<3?'disabled':''}>${bolts(3)}<span><strong class="impulse-step-phrase">+ UM PASSO</strong> EMOÇÃO</span></button>${Object.values(rt.stepMods).some(Boolean)?'<button data-action="step-reset">ENCERRAR AUMENTOS DE PASSO</button>':''}</div>`;
   return '';
 }
 
@@ -198,7 +198,9 @@ function renderPending(){
   }
   if(rt.readiness)chips.push('<div class="pending-chip"><b>PRONTIDÃO ATIVA</b><span class="separator">·</span><span class="pending-label">RODADA ANTECIPADA</span></div>');
   if(!chips.length)chips.push('<div class="pending-chip empty">SEM EFEITOS TEMPORÁRIOS</div>');
-  $('#pending').innerHTML=chips.join('');
+  const markup=chips.join('');
+  $('#pending').innerHTML=markup;
+  const mobile=$('#pendingMobile');if(mobile)mobile.innerHTML=markup;
 }
 
 function renderDynamic(){if(!character)return;renderAttributes();renderSkills();renderResources();renderAbilities();renderPending()}

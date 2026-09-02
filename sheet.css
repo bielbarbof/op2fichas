@@ -1056,3 +1056,121 @@ button {
   .profile-tag,.dot,.level-word,.level-badge { flex: 0 0 auto; }
   .occupation { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
+
+/* v0.7.2 — responsive identity, mobile effects and control legibility. */
+@media (min-width:791px) {
+  .name-row { flex-wrap: nowrap; }
+  .name-row h1 { flex: 0 0 auto; }
+  .header-title { min-width: 0; }
+}
+
+.pending-panel-mobile { display: none; }
+
+/* Slight, controlled readability increase across sheet controls. */
+.roll-skill { font-size: 11px; }
+.close-btn span { font-size: 11px; }
+.ability-actions button { font-size: 11px; line-height: 1.12; }
+.evaluation-resource>span { font-size: 10px; }
+.evaluation-die span:last-child,.evaluation-die.spent { font-size: 10px; }
+.resource-actions button { font-size: 28px; }
+.impulse-step-phrase {
+  font: inherit;
+  font-size: 1.12em;
+  font-weight: 600;
+  color: inherit;
+}
+
+/* PV/PD hover semantics. Executor positive action inverts to white; other profiles emphasize loss in red. */
+body[data-profile="executor"] .resource-actions button[data-delta="1"]:hover,
+body[data-profile="executor"] .resource-actions button[data-delta="1"]:focus-visible {
+  border-color: #fff;
+  background: #fff;
+  color: var(--accent);
+  outline: none;
+}
+body:not([data-profile="executor"]) .resource-actions button[data-delta="-1"]:hover,
+body:not([data-profile="executor"]) .resource-actions button[data-delta="-1"]:focus-visible {
+  border-color: #d13b22;
+  background: #d13b22;
+  color: #fff;
+  outline: none;
+}
+
+@media (max-width:540px) {
+  .sheet-header {
+    grid-template-columns: minmax(0,1fr) auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 58px;
+    padding: 7px 5px 10px;
+  }
+  .header-title { min-width: 0; }
+  .name-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    min-width: 0;
+    width: 100%;
+  }
+  .name-row h1,.level-word { display: none; }
+  .level-badge {
+    order: 1;
+    min-width: 31px;
+    height: 35px;
+    font-size: 19px;
+    padding: 0 5px 1px;
+    flex: 0 0 auto;
+  }
+  .name-row .dot:nth-of-type(2) { order: 2; }
+  .profile-tag {
+    order: 3;
+    flex: 0 0 auto;
+    background: transparent;
+    color: #aaa59e;
+    clip-path: none;
+    padding: 0;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .name-row .dot:nth-of-type(4) { order: 4; }
+  .occupation {
+    order: 5;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .dot { color: #7f7a72; font-size: 11px; flex: 0 0 auto; }
+  .header-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 52px;
+  }
+  .header-tools>.pending-panel { display: none; }
+  .close-btn {
+    width: 52px;
+    height: 42px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+    flex: 0 0 52px;
+  }
+  .close-btn span { display: none; }
+  .close-btn b { width: 100%; height: 100%; }
+  .pending-panel-mobile {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 14px 0 5px;
+  }
+  .pending-panel-mobile .pending-chip { flex: 1 1 100%; }
+  .roll-skill { font-size: 10px; }
+  .ability-actions button { font-size: 10.5px; }
+}

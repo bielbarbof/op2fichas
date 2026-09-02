@@ -763,3 +763,24 @@ button {
     height: 46px;
   }
 }
+
+/* v0.7.2 — preview identity and button legibility. */
+.player-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.player-identity .player-name-row { flex: 0 0 auto; }
+.player-identity .bigmeta { margin-top: 0; flex: 1 1 auto; }
+.open-btn,.primary-open,.gm-open,.close-chat { font-size: 13px; line-height: 1.1; }
+
+@media (max-width:620px) {
+  .player-identity {
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+  }
+  .player-identity .bigmeta { margin-top: 0; }
+  .open-btn,.primary-open,.gm-open,.close-chat { font-size: 12px; }
+}

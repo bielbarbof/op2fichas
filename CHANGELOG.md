@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.2
+
+- Reorganiza o cabeçalho mobile para `[nível] • perfil • ocupação`, com fechamento na mesma linha e efeitos temporários realocados após Atributos.
+- Alinha perfil, ocupação e nível ao lado do nome no desktop e também na visão resumida dos personagens.
+- Equaliza a tipografia dos cards de rolagem da Ficha com o Chat.
+- Melhora a legibilidade dos botões, atualiza os textos do Ímpeto e refina hovers de PV/PD por perfil.
+
 ## 0.7.1
 
 - Unifica a apresentação de perfil, ocupação e nível entre ficha completa e visão de personagens, aproximando as formas da referência original.
