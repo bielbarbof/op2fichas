@@ -99,9 +99,11 @@ button {
 .name-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px 10px;
   flex-wrap: wrap;
+  min-width: 0;
 }
+.name-row h1 { flex: 0 0 100%; }
 .name-row h1 {
   margin: 0;
   font-family: var(--font-display);
@@ -113,39 +115,42 @@ button {
   letter-spacing: .01em;
 }
 .profile-tag {
-  font-family: var(--font-button);
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-weight: 500;
   text-transform: uppercase;
-  font-size: 14px;
+  font-size: 15px;
   background: var(--accent);
   color: white;
-  padding: 7px 15px;
-  clip-path: polygon(4% 0,100% 7%,94% 100%,0 88%);
+  padding: 10px 18px 11px;
+  line-height: 1;
+  clip-path: polygon(5% 12%,44% 9%,46% 0,94% 4%,100% 15%,96% 90%,4% 90%,3% 70%,0 63%,3% 56%,2% 18%);
 }
 .occupation,.level-word {
   font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: .025em;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: .02em;
   text-transform: uppercase;
+  line-height: 1;
 }
 .dot {
   color: var(--accent);
-  font-size: 17px;
+  font-size: 18px;
+  line-height: 1;
 }
 .level-badge {
   display: grid;
   place-items: center;
-  min-width: 40px;
-  height: 43px;
-  padding: 0 9px;
+  min-width: 45px;
+  height: 50px;
+  padding: 0 9px 2px;
   background: var(--accent);
   color: #fff;
-  font-family: var(--font-button);
-  font-size: 24px;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 500;
   line-height: 1;
-  clip-path: polygon(5% 7%,91% 0,100% 84%,14% 100%,0 18%);
+  clip-path: polygon(8% 7%,34% 8%,38% 0,83% 4%,100% 13%,96% 88%,76% 90%,68% 100%,10% 93%,2% 76%,4% 19%);
 }
 .header-tools {
   min-width: 0;
@@ -798,7 +803,7 @@ button {
   left: 50%;
   top: 50%;
   z-index: 2;
-  width: min(520px,calc(100vw - 40px));
+  width: min(720px,calc(100vw - 32px));
   transform: translate(-50%,-50%);
   display: grid;
   justify-items: center;
@@ -806,25 +811,25 @@ button {
   text-align: center;
 }
 .preloader-seal {
-  width: clamp(78px,7.25vw,116px);
+  width: clamp(150px,11vw,190px);
   height: auto;
   max-width: none;
   object-fit: contain;
-  margin: 0 auto 20px;
+  margin: 0 auto 34px;
   opacity: 1;
 }
 .preloader-copy strong {
   font-family: var(--font-display);
-  font-size: clamp(68px,6vw,90px);
+  font-size: clamp(104px,9vw,150px);
   font-weight: 400;
-  line-height: .94;
+  line-height: .9;
   color: var(--accent);
   text-transform: uppercase;
 }
 .preloader-progress {
-  width: min(280px,62vw);
+  width: min(150px,38vw);
   height: 3px;
-  margin-top: 12px;
+  margin-top: 22px;
   overflow: hidden;
   background: #211f1c;
   border: 0;
@@ -904,24 +909,14 @@ button {
   .sheet-header {
     gap: 10px;
   }
-  .name-row {
-    gap: 7px;
-  }
-  .name-row h1 {
-    font-size: 38px;
-  }
-  .profile-tag {
-    font-size: 11px;
-    padding: 6px 10px;
-  }
-  .occupation,.level-word {
-    font-size: 11px;
-  }
-  .level-badge {
-    min-width: 34px;
-    height: 36px;
-    font-size: 20px;
-  }
+  .name-row { gap: 6px; flex-wrap: nowrap; }
+  .name-row h1 { display: none; }
+  .profile-tag { font-size: 9px; padding: 7px 10px 8px; flex: 0 0 auto; }
+  .occupation,.level-word { font-size: 10px; }
+  .occupation { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dot { font-size: 12px; flex: 0 0 auto; }
+  .level-word { flex: 0 0 auto; }
+  .level-badge { min-width: 31px; height: 35px; font-size: 19px; padding: 0 5px 1px; flex: 0 0 auto; }
   .header-tools {
     align-items: start;
   }
@@ -971,9 +966,9 @@ button {
     bottom: 12px;
     width: calc(100vw - 24px);
   }
-  .preloader-copy strong {
-    font-size: 58px;
-  }
+  .preloader-seal { width: clamp(116px,34vw,148px); margin-bottom: 25px; }
+  .preloader-copy strong { font-size: clamp(72px,20vw,100px); }
+  .preloader-progress { width: min(130px,36vw); margin-top: 18px; }
 }
 @media (min-width:1121px) {
   .sheet-grid {
@@ -1005,9 +1000,13 @@ button {
   font-family: var(--font-display);
   font-weight: 400;
 }
-.profile-tag,.occupation,.level-word,.level-badge,.ribbon,.ability-title h2,.ability-cost,.step-note,.resource-head>span,.evaluation-resource>span,.pending-chip b {
+.ribbon,.ability-title h2,.ability-cost,.step-note,.resource-head>span,.evaluation-resource>span,.pending-chip b {
   font-family: var(--font-heading);
   font-weight: 600;
+}
+.profile-tag,.occupation,.level-word,.level-badge {
+  font-family: var(--font-heading);
+  font-weight: 500;
 }
 .ability-card p {
   font-family: var(--font-body);
@@ -1052,9 +1051,8 @@ button {
 }
 @media (max-width:540px) {
   .header-title { width: 100%; min-width: 0; }
-  .name-row { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; width: 100%; gap: 9px; }
-  .name-row h1,.name-row .dot,.level-word { display: none; }
-  .profile-tag { justify-self: start; }
-  .occupation { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .level-badge { justify-self: end; }
+  .name-row { display: flex; align-items: center; width: 100%; gap: 6px; flex-wrap: nowrap; }
+  .name-row h1 { display: none; }
+  .profile-tag,.dot,.level-word,.level-badge { flex: 0 0 auto; }
+  .occupation { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }

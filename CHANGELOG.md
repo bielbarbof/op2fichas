@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1
+
+- Unifica a apresentação de perfil, ocupação e nível entre ficha completa e visão de personagens, aproximando as formas da referência original.
+- Reorganiza o cabeçalho mobile para manter Perfil • Ocupação • NÍVEL [valor] em uma única composição compacta.
+- Amplia nome e selo na tela de carregamento e reduz a presença visual da barra de progresso.
+- Reduz o peso tipográfico dos elementos de identidade sem alterar regras, estados ou sincronização.
+
 ## 0.7.0
 
 - Fichas passaram a reconhecer a DT compartilhada definida pelo Mestre no Chat.

@@ -296,14 +296,15 @@ button {
   color: var(--accent);
 }
 .profile-tag {
-  font-family: var(--font-button);
+  font-family: var(--font-heading);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   background: var(--accent);
-  padding: 6px 9px;
+  padding: 7px 11px 8px;
   color: white;
-  clip-path: polygon(4% 0,100% 8%,94% 100%,0 90%);
+  line-height: 1;
+  clip-path: polygon(5% 12%,44% 9%,46% 0,94% 4%,100% 15%,96% 90%,4% 90%,3% 70%,0 63%,3% 56%,2% 18%);
 }
 .meta {
   font-family: var(--font-button);
@@ -323,26 +324,28 @@ button {
 .level-inline {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
+  flex: 0 0 auto;
 }
 .level-inline>span {
-  font-family: var(--font-button);
+  font-family: var(--font-heading);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: .02em;
 }
 .level-inline>b {
   display: inline-grid;
   place-items: center;
-  min-width: 29px;
-  height: 29px;
+  min-width: 32px;
+  height: 35px;
   background: var(--accent);
   color: #fff;
-  padding: 0 7px;
-  font-family: var(--font-button);
-  font-size: 16px;
-  font-weight: 600;
-  clip-path: polygon(6% 0,93% 5%,100% 90%,12% 100%,0 17%);
-  transform: rotate(-3deg);
+  padding: 0 7px 1px;
+  font-family: var(--font-heading);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1;
+  clip-path: polygon(8% 7%,34% 8%,38% 0,83% 4%,100% 13%,96% 88%,76% 90%,68% 100%,10% 93%,2% 76%,4% 19%);
 }
 .resource-line {
   display: flex;
@@ -425,10 +428,8 @@ button {
   object-fit: contain;
 }
 .player-name-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: block;
+  min-width: 0;
 }
 .player-info h2 {
   font-family: var(--font-display);
@@ -441,26 +442,36 @@ button {
 }
 .bigmeta {
   display: flex;
-  gap: 7px;
+  gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
-  font-family: var(--font-button);
+  flex-wrap: nowrap;
+  min-width: 0;
+  font-family: var(--font-heading);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  margin-top: 7px;
+  margin-top: 8px;
+  line-height: 1;
 }
 .player-profile {
   color: #fff;
   background: var(--accent);
-  padding: 3px 7px;
+  padding: 8px 14px 9px;
   line-height: 1;
-  clip-path: polygon(4% 5%,94% 0,100% 88%,6% 100%);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 500;
+  clip-path: polygon(5% 12%,44% 9%,46% 0,94% 4%,100% 15%,96% 90%,4% 90%,3% 70%,0 63%,3% 56%,2% 18%);
+  flex: 0 0 auto;
 }
 .bigmeta .meta-dot {
-  color: #716b63;
+  color: var(--accent);
+  font-size: 14px;
   font-weight: 400;
+  line-height: 1;
+  flex: 0 0 auto;
 }
+.player-occupation { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .stats {
   display: grid;
   grid-template-columns: repeat(3,1fr);
@@ -677,12 +688,13 @@ button {
   .player-info h2 {
     font-size: 34px;
   }
-  .player-name-row {
-    align-items: flex-start;
-  }
-  .level-inline>span {
-    display: none;
-  }
+  .player-name-row { display: block; }
+  .bigmeta { gap: 6px; font-size: 10px; margin-top: 6px; }
+  .player-profile { font-size: 9px; padding: 6px 9px 7px; }
+  .level-inline { gap: 5px; }
+  .level-inline>span { display: inline; font-size: 9px; }
+  .level-inline>b { min-width: 28px; height: 31px; font-size: 17px; padding: 0 5px 1px; }
+  .bigmeta .meta-dot { font-size: 11px; }
   .stats {
     gap: 5px;
   }
@@ -710,9 +722,13 @@ button {
   font-family: var(--font-display);
   font-weight: 400;
 }
-.section-title span,.preset b,.help-card strong,.role-badge,.profile-tag,.level-inline>span,.level-inline>b,.meta,.bigmeta,.stat span,.mini-tag,.gm-assignment-label>span {
+.section-title span,.preset b,.help-card strong,.role-badge,.stat span,.mini-tag,.gm-assignment-label>span {
   font-family: var(--font-heading);
   font-weight: 600;
+}
+.profile-tag,.level-inline>span,.level-inline>b,.meta,.bigmeta,.player-profile {
+  font-family: var(--font-heading);
+  font-weight: 500;
 }
 .preset span,.help-card p,.footnote {
   font-family: var(--font-body);
