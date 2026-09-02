@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.6
+
+- Release de compatibilidade com o hotfix de manifesto do Chat v0.7.6; fichas, regras, estados, sincronização e persistência permanecem inalterados.
+
 ## 0.7.5
 
 - Release de compatibilidade com o hotfix de carregamento e desempenho do Chat v0.7.5; fichas, regras, estados, sincronização e persistência permanecem inalterados.
