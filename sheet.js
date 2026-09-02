@@ -46,8 +46,7 @@ function requestMutationFromGM(operation){
 function sendMutation(operation){
   const execute=async()=>{
     if(!OBR.isAvailable){state.roomState=localApply(operation);renderDynamic();return state.roomState}
-    // Serializar mutações evita que cliques rápidos leiam o mesmo estado antigo
-    // e sobrescrevam PV/PD, Ímpeto ou recursos de habilidades uns dos outros.
+    // Serialize mutations so rapid clicks cannot overwrite resource updates from the same stale state.
     if(state.role==='GM')return writeDirect(operation);
     return requestMutationFromGM(operation);
   };
@@ -212,9 +211,7 @@ function showRoll(result){const el=$('#rollResult');el.innerHTML=resultMarkup(re
 async function rollSkill(key){
   const skill=character.skills[key];if(!skill)return;
   const rt=runtime(),attr=skill.attribute,attrSides=stepDie(character.attributes[attr],rt.stepMods[attr]);
-  // Focos são obrigatórios no próximo teste do atributo compatível. Se houver
-  // mais bônus preparados do que o limite de quatro dados permite, priorize
-  // primeiro os bônus com escopo exato e mantenha os demais preparados.
+  // Mandatory attribute-scoped bonuses take priority when the four-die limit is reached.
   const compatible=rt.pendingDice.filter(d=>d.scope==='any'||d.scope===attr);
   const eligible=[...compatible.filter(d=>d.scope===attr),...compatible.filter(d=>d.scope==='any')].slice(0,2);
   const dice=[{sides:attrSides,source:attrLabel(attr),kind:'attribute'},{sides:skill.die,source:labelSkill(character,key),kind:'skill'},...eligible.map(d=>({sides:d.sides,source:d.source,kind:'bonus'}))];
