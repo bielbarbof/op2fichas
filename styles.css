@@ -427,6 +427,9 @@ button {
   height: 100%;
   object-fit: contain;
 }
+.player-info {
+  min-width: 0;
+}
 .player-name-row {
   display: block;
   min-width: 0;
@@ -685,16 +688,6 @@ button {
     width: 114px;
     height: 114px;
   }
-  .player-info h2 {
-    font-size: 34px;
-  }
-  .player-name-row { display: block; }
-  .bigmeta { gap: 6px; font-size: 10px; margin-top: 6px; }
-  .player-profile { font-size: 9px; padding: 6px 9px 7px; }
-  .level-inline { gap: 5px; }
-  .level-inline>span { display: inline; font-size: 9px; }
-  .level-inline>b { min-width: 28px; height: 31px; font-size: 17px; padding: 0 5px 1px; }
-  .bigmeta .meta-dot { font-size: 11px; }
   .stats {
     gap: 5px;
   }
@@ -764,7 +757,6 @@ button {
   }
 }
 
-/* v0.7.2 — preview identity and button legibility. */
 .player-identity {
   display: flex;
   align-items: center;
@@ -777,10 +769,33 @@ button {
 
 @media (max-width:620px) {
   .player-identity {
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr);
     align-items: center;
-    gap: 9px;
-    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+    width: 100%;
   }
-  .player-identity .bigmeta { margin-top: 0; }
+  .player-identity .player-name-row { min-width: 0; }
+  .player-identity .player-name-row h2 {
+    font-size: clamp(25px,6.4vw,29px);
+    white-space: nowrap;
+  }
+  .player-identity .bigmeta {
+    display: grid;
+    grid-template-columns: auto auto minmax(0,1fr) auto auto;
+    align-items: center;
+    margin-top: 0;
+    min-width: 0;
+    width: 100%;
+    gap: 4px;
+    font-size: 8px;
+  }
+  .player-profile { font-size: 7.5px; padding: 5px 6px 6px; }
+  .player-occupation { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bigmeta .meta-dot { font-size: 8px; }
+  .level-inline { gap: 3px; }
+  .level-inline>span { font-size: 7.5px; }
+  .level-inline>b { min-width: 24px; height: 27px; font-size: 15px; padding: 0 4px 1px; }
   .open-btn,.primary-open,.gm-open,.close-chat { font-size: 12px; }
 }

@@ -87,7 +87,7 @@ function renderAttributes(){
   const rt=runtime();
   $('#attributes').innerHTML=Object.entries(character.attributes).map(([key,base])=>{
     const sides=stepDie(base,rt.stepMods[key]);const delta=rt.stepMods[key];
-    return `<div class="attribute-card"><span class="label">${attrLabel(key)}</span><span class="attribute-die">${mechanicDieImg(sides)}</span>${delta?`<span class="step-note">${delta>0?'+':''}${delta} PASSO${Math.abs(delta)>1?'S':''}</span>`:''}</div>`;
+    return `<div class="attribute-card"><span class="label">${attrLabel(key)}</span><span class="attribute-die">${mechanicDieImg(sides)}</span>${delta?`<span class="step-note">${delta===1?'+ UM PASSO':delta===-1?'− UM PASSO':`${delta>0?'+':''}${delta} PASSOS`}</span>`:''}</div>`;
   }).join('');
 }
 

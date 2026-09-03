@@ -1026,7 +1026,6 @@ button {
   filter: brightness(0) invert(1);
 }
 
-/* v0.7.0 visual refinements. */
 .ribbon-skills { clip-path: polygon(1% 3%,94% 0,100% 82%,7% 100%,0 17%); }
 .ribbon-attributes { clip-path: polygon(0 8%,91% 0,100% 72%,97% 94%,6% 100%); }
 .abilities .ability-card:nth-child(3n+1) .ability-title h2 { clip-path: polygon(0 4%,95% 0,100% 84%,8% 100%,2% 79%); }
@@ -1057,7 +1056,6 @@ button {
   .occupation { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
-/* v0.7.2 — responsive identity, mobile effects and control legibility. */
 @media (min-width:791px) {
   .name-row { flex-wrap: nowrap; }
   .name-row h1 { flex: 0 0 auto; }
