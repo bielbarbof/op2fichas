@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.3
+
+- Alinha a versão pública das Fichas à release 0.8.3 do ecossistema, sem alterações funcionais na interface ou nas regras.
+
 ## 0.8.2
 
 - Mantém perfil, ocupação e nível agrupados ao lado do nome nos previews, seguindo a mesma ordem visual da ficha interna.
