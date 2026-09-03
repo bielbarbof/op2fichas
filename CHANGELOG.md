@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.4
+
+- Alinha a versão pública das Fichas à release 0.8.4 do ecossistema, sem alterações funcionais na interface ou nas regras.
+
 ## 0.8.3
 
 - Alinha a versão pública das Fichas à release 0.8.3 do ecossistema, sem alterações funcionais na interface ou nas regras.

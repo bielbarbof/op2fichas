@@ -1,4 +1,4 @@
-# OP2 Playtest Fichas — v0.8.3
+# OP2 Playtest Fichas — v0.8.4
 
 Este é um conteúdo não oficial, publicado sob a Licença da Comunidade de Ordem Paranormal.
 
