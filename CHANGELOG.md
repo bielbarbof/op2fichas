@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0
+
+- Corrige a composição de identidade nos previews para manter perfil, ocupação e nível agrupados imediatamente ao lado do nome, na mesma ordem visual da ficha interna.
+- Preserva o restante da interface, regras, estados e sincronização aprovados.
+
 ## 0.7.8
 
 - Mantém a extensão de Fichas funcionalmente idêntica à v0.7.7 e alinha a versão do ecossistema com o Chat.

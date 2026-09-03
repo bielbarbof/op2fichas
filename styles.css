@@ -474,7 +474,7 @@ button {
   line-height: 1;
   flex: 0 0 auto;
 }
-.player-occupation { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player-occupation { min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .stats {
   display: grid;
   grid-template-columns: repeat(3,1fr);
@@ -764,37 +764,38 @@ button {
   min-width: 0;
 }
 .player-identity .player-name-row { flex: 0 0 auto; }
-.player-identity .bigmeta { margin-top: 0; flex: 1 1 auto; }
+.player-identity .bigmeta { margin-top: 0; flex: 0 1 auto; width: auto; max-width: 100%; }
 .open-btn,.primary-open,.gm-open,.close-chat { font-size: 13px; line-height: 1.1; }
 
 @media (max-width:620px) {
   .player-identity {
-    display: grid;
-    grid-template-columns: auto minmax(0,1fr);
+    display: flex;
     align-items: center;
     gap: 6px;
     min-width: 0;
     width: 100%;
   }
-  .player-identity .player-name-row { min-width: 0; }
+  .player-identity .player-name-row { min-width: 0; flex: 0 0 auto; }
   .player-identity .player-name-row h2 {
     font-size: clamp(25px,6.4vw,29px);
     white-space: nowrap;
   }
   .player-identity .bigmeta {
-    display: grid;
-    grid-template-columns: auto auto minmax(0,1fr) auto auto;
+    display: flex;
     align-items: center;
     margin-top: 0;
     min-width: 0;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
+    flex: 0 1 auto;
     gap: 4px;
     font-size: 8px;
+    overflow: hidden;
   }
   .player-profile { font-size: 7.5px; padding: 5px 6px 6px; }
-  .player-occupation { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .player-occupation { min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bigmeta .meta-dot { font-size: 8px; }
-  .level-inline { gap: 3px; }
+  .level-inline { gap: 3px; flex: 0 0 auto; }
   .level-inline>span { font-size: 7.5px; }
   .level-inline>b { min-width: 24px; height: 27px; font-size: 15px; padding: 0 4px 1px; }
   .open-btn,.primary-open,.gm-open,.close-chat { font-size: 12px; }
