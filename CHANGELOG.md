@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.8
+
+- Mantém a extensão de Fichas funcionalmente idêntica à v0.7.7 e alinha a versão do ecossistema com o Chat.
+
 ## 0.7.7
 
 - Refina a identidade dos personagens em previews estreitos para manter nome, perfil, ocupação e nível na mesma composição.
