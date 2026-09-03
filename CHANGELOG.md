@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.8.1
+## 0.8.2
 
 - Mantém perfil, ocupação e nível agrupados ao lado do nome nos previews, seguindo a mesma ordem visual da ficha interna.
 - Refina a identidade em viewports estreitos para evitar que os status sejam empurrados para outra linha sem necessidade.
